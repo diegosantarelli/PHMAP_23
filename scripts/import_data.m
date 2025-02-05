@@ -1,16 +1,24 @@
 %% Import delle label
-train_labels = readtable('/Users/diegosantarelli/Desktop/Manutenzione Preventiva/Progetto/dataset/train/labels.xlsx');
+%train_labels = readtable('/Users/diegosantarelli/Desktop/Manutenzione Preventiva/Progetto/dataset/train/labels.xlsx');
+train_labels = readtable('/Users/andreamarini/Desktop/Manutenzione/dataset/train/labels.xlsx');
+% train_labels = readtable('/Users/simonerecinelli/Desktop/Manutenzione Preventiva/dataset/train/labels.xlsx')
 
 train_labels.Properties.VariableNames(1:3) = {'Case#', 'Spacecraft#', 'Condition'};
 
-test_labels = readtable('/Users/diegosantarelli/Desktop/Manutenzione Preventiva/Progetto/dataset/test/labels_spacecraft.xlsx');
+%test_labels = readtable('/Users/diegosantarelli/Desktop/Manutenzione Preventiva/Progetto/dataset/test/labels_spacecraft.xlsx');
+test_labels = readtable('/Users/andreamarini/Desktop/Manutenzione/dataset/test/labels_spacecraft.xlsx');
+% test_labels = readtable('/Users/simonerecinelli/Desktop/Manutenzione Preventiva/dataset/test/labels_spacecraft.xlsx');
 
 test_labels.Properties.VariableNames(1:2) = {'Case#', 'Spacecraft#'};
 
 %% Import dei dati
 
-train_folder = '/Users/diegosantarelli/Desktop/Manutenzione Preventiva/Progetto/dataset/train/data';
-test_folder = '/Users/diegosantarelli/Desktop/Manutenzione Preventiva/Progetto/dataset/test/data';
+%train_folder = '/Users/diegosantarelli/Desktop/Manutenzione Preventiva/Progetto/dataset/train/data';
+train_folder = '/Users/andreamarini/Desktop/Manutenzione/dataset/train/data';
+% train folder = '/Users/simonerecinelli/Desktop/Manutenzione Preventiva/dataset/train/data'
+% test_folder = '/Users/diegosantarelli/Desktop/Manutenzione Preventiva/Progetto/dataset/test/data';
+test_folder = '/Users/andreamarini/Desktop/Manutenzione/dataset/test/data';
+% test_folder = '/Users/simonerecinelli/Desktop/Manutenzione Preventiva/dataset/test/data'
 
 train_files = dir(fullfile(train_folder, '*.csv'));
 test_files = dir(fullfile(test_folder, '*.csv'));
@@ -76,3 +84,44 @@ for i = 1:length(test_cases)
     test_data_labeled.(case_name).data = data;
     test_data_labeled.(case_name).label = label;
 end
+
+%% Conversione da struct a table per utilizzare DiagnosticFeatureDesigner
+
+train_data_table = table(); % Inizializza una tabella vuota
+
+% Ottieni i nomi dei casi
+case_names = fieldnames(train_data_labeled);
+
+for i = 1:length(case_names)
+    case_name = case_names{i};
+    
+    % Estrai i dati del caso e le etichette
+    data = train_data_labeled.(case_name).data; % Dati del caso (misurazioni)
+    label = train_data_labeled.(case_name).label; % Etichette (tutte le colonne)
+    
+    % Aggiungi il nome del caso come colonna
+    data.CaseName = repelem({case_name}, height(data), 1); % Nome del caso
+    
+    % Concatena tutte le colonne di `label` a `data`
+    label_table = repelem(label, height(data), 1); % Ripeti le etichette per ogni riga dei dati
+    data = [data, label_table]; % Concatena i dati con le etichette
+    
+    % Concatena il caso alla tabella principale
+    train_data_table = [train_data_table; data];
+end
+
+% Trasforma 'Yes'/'No' in 1/0
+train_data_table.BP1 = double(strcmp(train_data_table.BP1, 'Yes'));
+train_data_table.BP2 = double(strcmp(train_data_table.BP2, 'Yes'));
+train_data_table.BP3 = double(strcmp(train_data_table.BP3, 'Yes'));
+train_data_table.BP4 = double(strcmp(train_data_table.BP4, 'Yes'));
+train_data_table.BP5 = double(strcmp(train_data_table.BP5, 'Yes'));
+train_data_table.BP6 = double(strcmp(train_data_table.BP6, 'Yes'));
+train_data_table.BP7 = double(strcmp(train_data_table.BP7, 'Yes'));
+train_data_table.BV1 = double(strcmp(train_data_table.BV1, 'Yes'));
+
+
+
+
+
+
