@@ -1,23 +1,23 @@
 %% Import delle label
-%train_labels = readtable('/Users/diegosantarelli/Desktop/Manutenzione Preventiva/Progetto/dataset/train/labels.xlsx');
-train_labels = readtable('/Users/andreamarini/Desktop/Manutenzione/dataset/train/labels.xlsx');
+train_labels = readtable('/Users/diegosantarelli/Desktop/Manutenzione Preventiva/Progetto/dataset/train/labels.xlsx');
+% train_labels = readtable('/Users/andreamarini/Desktop/Manutenzione/dataset/train/labels.xlsx');
 % train_labels = readtable('/Users/simonerecinelli/Desktop/Manutenzione Preventiva/dataset/train/labels.xlsx')
 
 train_labels.Properties.VariableNames(1:3) = {'Case#', 'Spacecraft#', 'Condition'};
 
-%test_labels = readtable('/Users/diegosantarelli/Desktop/Manutenzione Preventiva/Progetto/dataset/test/labels_spacecraft.xlsx');
-test_labels = readtable('/Users/andreamarini/Desktop/Manutenzione/dataset/test/labels_spacecraft.xlsx');
+test_labels = readtable('/Users/diegosantarelli/Desktop/Manutenzione Preventiva/Progetto/dataset/test/labels_spacecraft.xlsx');
+% test_labels = readtable('/Users/andreamarini/Desktop/Manutenzione/dataset/test/labels_spacecraft.xlsx');
 % test_labels = readtable('/Users/simonerecinelli/Desktop/Manutenzione Preventiva/dataset/test/labels_spacecraft.xlsx');
 
 test_labels.Properties.VariableNames(1:2) = {'Case#', 'Spacecraft#'};
 
 %% Import dei dati
 
-%train_folder = '/Users/diegosantarelli/Desktop/Manutenzione Preventiva/Progetto/dataset/train/data';
-train_folder = '/Users/andreamarini/Desktop/Manutenzione/dataset/train/data';
+train_folder = '/Users/diegosantarelli/Desktop/Manutenzione Preventiva/Progetto/dataset/train/data';
+% train_folder = '/Users/andreamarini/Desktop/Manutenzione/dataset/train/data';
 % train folder = '/Users/simonerecinelli/Desktop/Manutenzione Preventiva/dataset/train/data'
-% test_folder = '/Users/diegosantarelli/Desktop/Manutenzione Preventiva/Progetto/dataset/test/data';
-test_folder = '/Users/andreamarini/Desktop/Manutenzione/dataset/test/data';
+test_folder = '/Users/diegosantarelli/Desktop/Manutenzione Preventiva/Progetto/dataset/test/data';
+% test_folder = '/Users/andreamarini/Desktop/Manutenzione/dataset/test/data';
 % test_folder = '/Users/simonerecinelli/Desktop/Manutenzione Preventiva/dataset/test/data'
 
 train_files = dir(fullfile(train_folder, '*.csv'));
