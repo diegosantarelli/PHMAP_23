@@ -120,8 +120,57 @@ train_data_table.BP6 = double(strcmp(train_data_table.BP6, 'Yes'));
 train_data_table.BP7 = double(strcmp(train_data_table.BP7, 'Yes'));
 train_data_table.BV1 = double(strcmp(train_data_table.BV1, 'Yes'));
 
+%% Conversione da struct a table per il test set
+
+test_data_table = table(); % Inizializza una tabella vuota
+
+% Ottieni i nomi dei casi di test
+case_names = fieldnames(test_data_labeled);
+
+for i = 1:length(case_names)
+    case_name = case_names{i};
+    
+    % Estrai i dati del caso e le etichette
+    data = test_data_labeled.(case_name).data; % Dati del caso (misurazioni)
+    label = test_data_labeled.(case_name).label; % Etichette (tutte le colonne)
+    
+    % Aggiungi il nome del caso come colonna
+    data.CaseName = repelem({case_name}, height(data), 1); % Nome del caso
+    
+    % Concatena tutte le colonne di `label` a `data`
+    label_table = repelem(label, height(data), 1); % Ripeti le etichette per ogni riga dei dati
+    data = [data, label_table]; % Concatena i dati con le etichette
+    
+    % Concatena il caso alla tabella principale
+    test_data_table = [test_data_table; data];
+end
+
+%% Mapping etichette
+
+%
+%   NORMAL = condizione normale
+%   FAULT = guasto alla valvola (SV1, SV2, SV3, SV4)
+%   ANOMALY = presenza bolla (BV1, BP1, BP2, BP3, BP4, BP5, BP6, BP7)
+%
 
 
+% Mappa le condizioni da stringa a valore numerico
+condition_map = containers.Map({'Normal', 'Fault', 'Anomaly'}, [1, 2, 3]);
+
+train_data_table_condition = train_data_table; % Inizializza una tabella vuota
+
+train_data_table_condition.Condition = cellfun(@(x) condition_map(x), train_data_table.Condition);
+
+class(train_data_table_condition.TIME)
 
 
+% Funzione per la conversione delle condizioni
+map_condition = @(value) (value == 1) * 0 + ismember(value, [2, 3]) * 1;
 
+% Converti le etichette di train
+train_data_table.Condition = cellfun(@(x) condition_map(x), train_data_table.Condition);
+train_data_table.Condition = arrayfun(map_condition, train_data_table.Condition);
+
+% % Converti le etichette di test
+% test_data_table.Condition = cellfun(@(x) condition_map(x), test_data_table.Condition);
+% test_data_table.binary_condition = arrayfun(map_condition, test_data_table.Condition);
