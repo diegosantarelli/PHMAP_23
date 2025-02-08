@@ -1,7 +1,5 @@
 %% Import delle label
-train_labels = readtable('/Users/andreamarini/Desktop/Manutenzione/dataset/train/labels.xlsx');
-%train_labels = readtable('/Users/diegosantarelli/Desktop/Manutenzione Preventiva/Progetto/dataset/train/labels.xlsx');
-%train_labels = readtable('/Users/simonerecinelli/Desktop/Manutenzione Preventiva/dataset/train/labels.xlsx')
+train_labels = readtable('dataset/train/labels.xlsx');
 train_labels.Properties.VariableNames(1:3) = {'Case', 'Spacecraft', 'Condition'};
 
 % Trasforma 'Yes'/'No' in 1/0
@@ -16,9 +14,7 @@ train_labels.BV1 = double(strcmp(train_labels.BV1, 'Yes'));
 
 %% Import dei dati
 
-train_folder = '/Users/andreamarini/Desktop/Manutenzione/dataset/train/data';
-%train_folder = '/Users/diegosantarelli/Desktop/Manutenzione Preventiva/Progetto/dataset/train/data';
-%train folder = '/Users/simonerecinelli/Desktop/Manutenzione Preventiva/dataset/train/data'
+train_folder = 'dataset/train/data';
 train_files = dir(fullfile(train_folder, '*.csv'));
 
 % Crea la tabella finale
