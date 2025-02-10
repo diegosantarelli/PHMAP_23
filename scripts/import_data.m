@@ -118,3 +118,39 @@ for i = 1:length(train_files)
     labeledData = [labeledData; new_row];
 end
 
+
+% Filtra i casi con Task1 = 0
+normal_cases = labeledData(labeledData.Task1 == 0, {'Case', 'Task1'});
+
+% Filtra i casi con Task1 = 1
+anomaly_cases = labeledData(labeledData.Task1 == 1, {'Case', 'Task1'});
+
+% % Inizializza una matrice vuota per i dati
+% all_signals = [];
+% 
+% % Estrai i dati dalla colonna 'Case'
+% for i = 1:height(labeledData)
+%     % Ogni cella di 'Case' contiene una tabella, estrai i valori necessari
+%     current_case = labeledData.Case{i}; % Estrai la tabella corrente
+%     % Supponendo che P1, P2, ..., P7 siano colonne della tabella
+%     signals = current_case{:, {'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7'}};
+%     % Aggiungi i dati estratti alla matrice
+%     all_signals = [all_signals; signals];
+% end
+% 
+% % Calcola la matrice di correlazione
+% corr_matrix = corr(all_signals);
+% 
+% % Visualizza la matrice di correlazione come heatmap
+% heatmap(corr_matrix, 'XDisplayLabels', {'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7'}, ...
+%     'YDisplayLabels', {'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7'});
+% 
+% % Titolo per la heatmap
+% title('Matrice di Correlazione delle Feature');
+
+% Supponiamo di avere due tabelle, table1 e table2
+anomaly_cases.Group = repmat({'anomaly_cases'}, height(anomaly_cases), 1); % Aggiungi una colonna per identificare il gruppo
+normal_cases.Group = repmat({'normal_cases'}, height(normal_cases), 1);
+
+% Unisci le tabelle
+combinedTable = [anomaly_cases; normal_cases];
