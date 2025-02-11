@@ -9,12 +9,12 @@ trainingSet = table();
 testSet = table();
 
 % Trova le classi uniche
-uniqueClasses = unique(labeledData.(targetField));
+uniqueClasses = unique(featureTable.(targetField));
 
 % Per ogni classe, esegui una divisione stratificata
 for c = 1:length(uniqueClasses)
     % Filtra i dati per la classe corrente
-    classData = labeledData(labeledData.(targetField) == uniqueClasses(c), :);
+    classData = featureTable(featureTable.(targetField) == uniqueClasses(c), :);
     
     % Determina il numero di campioni da includere nel test set
     numTestSamples = round(height(classData) * testPercentage / 100);
