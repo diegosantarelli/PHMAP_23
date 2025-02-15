@@ -1,1 +1,4 @@
-[featureTable, outputTable] = diagnosticFeatures(task2_finalData);
+labeledData_task2 = labeledData(:, {'Case', 'Task2'});
+
+
+

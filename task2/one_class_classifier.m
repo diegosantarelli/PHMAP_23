@@ -1,56 +1,49 @@
-%% 1. Separazione dei dati in "conosciuti" (Bubble e Valve) e "candidati sconosciuti" (Unknown)
-% Dati noti con Task2 == 2 (Bubble) o Task2 == 3 (Valve)
-knownData_t2 = FeatureTable1(FeatureTable1.Task2 == 2 | FeatureTable1.Task2 == 3, :);
+X_features = normalize(FeatureTable1{:, 3:end}, 'zscore'); % Normalizzazione Z-score
 
-% Dati etichettati come unknown generati da outlier localized (Task2 == 1)
-unknownCandidates_t2 = FeatureTable1(FeatureTable1.Task2 == 1, :);
+k = 10;
+cv = cvpartition(size(X_features, 1), 'KFold', k);
 
-%% 2. Estrazione delle feature (escludiamo MemberID, TimeStart, TimeEnd e Task2)
-features = FeatureTable1(:, 5:end-1); % Prende tutte le colonne delle feature
-X_train_OCSVM = knownData_t2(:, 5:end-1); % Le feature dei dati noti
-X_train_OCSVM = table2array(X_train_OCSVM);
+false_negatives_total = 0;
+total_samples = 0;
 
-X_test_OCSVM = unknownCandidates_t2(:, 5:end-1);
-X_test_OCSVM = table2array(X_test_OCSVM);
+for i = 1:cv.NumTestSets
+    X_train = X_features(training(cv, i), :);
+    X_val = X_features(test(cv, i), :);
+    
+    rng(42);
+    % Addestra il OCSVM (OutlierFraction 0 perché non ci sono anomalie nel training)
+    ocsvm_model = ocsvm(X_train, ...
+                    'Nu', 0.4, ...
+                    'KernelScale', 1, ...
+                    'NumExpansionDimensions', 17000);
 
-%% 3. Addestramento del modello One-Class SVM
-mdl_OCSVM = fitcsvm(X_train_OCSVM, ones(size(X_train_OCSVM, 1), 1), ...
-    'KernelScale', 'auto', 'OutlierFraction', 0.05, 'Standardize', true, ...
-    'KernelFunction', 'rbf');
 
-%% 4. Predizione dei candidati unknown (frame per frame)
-[~, score_OCSVM] = predict(mdl_OCSVM, X_test_OCSVM);
-threshold = 0; % Modifica se serve
-isUnknown = score_OCSVM > threshold;
+    % Predizione sui dati noti di validazione
+    isAnomaly = ocsvm_model.isanomaly(X_val);
 
-% Aggiorna i frame con Task2 = 0 o 1 a seconda del risultato OCSVM
-predictedLabels = ones(height(unknownCandidates_t2), 1); % Default: Unknown
-predictedLabels(~isUnknown) = 0;
+    % Conta i falsi negativi (cioè i dati noti classificati come anomali)
+    false_negatives = sum(isAnomaly == -1);
+    false_negatives_total = false_negatives_total + false_negatives;
+    total_samples = total_samples + size(X_val, 1);
 
-unknownCandidates_t2.Task2 = predictedLabels;
-
-%% 5. Aggregazione per EnsembleID_ (votazione per ogni Member)
-members = unique(unknownCandidates_t2.EnsembleID_);
-finalLabels = zeros(length(members), 1);
-
-for i = 1:length(members)
-    memberFrames = unknownCandidates_t2(strcmp(unknownCandidates_t2.EnsembleID_, members{i}), :);
-    if any(memberFrames.Task2 == 1)
-        finalLabels(i) = 1; % Se almeno un frame è unknown, etichetta tutto il Member come unknown
-    else
-        finalLabels(i) = 0;
-    end
+    fprintf('Fold %d: Falsi negativi = %d su %d campioni\n', i, false_negatives, size(X_val, 1));
 end
 
-%% 6. Creazione tabella finale per ogni Member
-unknownSummary = table(members, finalLabels, 'VariableNames', {'EnsembleID_', 'Task2'});
+false_negative_rate = false_negatives_total / total_samples;
+fprintf('Tasso di falsi negativi complessivo: %.2f%%\n', false_negative_rate * 100);
 
-% Anche per i dati noti, li riportiamo per Member (Bubble e Valve)
-knownSummary = unique(knownData_t2(:, {'EnsembleID_', 'Task2'}));
+% Test su rumore bianco ripetuto più volte
+num_samples = 1000;
+num_features = size(X_features, 2);
+num_tests = 100;
 
-%% 7. Unione dei risultati
-task2_finalMembers = [knownSummary; unknownSummary];
+results = zeros(num_tests, 1);
+for i = 1:num_tests
+    X_noise = randn(num_samples, num_features);
+    [isAnomaly_noise, ~] = isanomaly(ocsvm_model, X_noise);
+    results(i) = sum(isAnomaly_noise);
+end
 
-%% 8. Visualizza il riepilogo
-disp('Distribuzione delle etichette Task2 dopo One-Class Classification (Aggregata per Member):');
-tabulate(task2_finalMembers.Task2);
+media_anomalie_rilevate = mean(results);
+fprintf('Media anomalie rilevate su rumore bianco (5 prove): %.2f su %d campioni (%.2f%%)\n', ...
+        media_anomalie_rilevate, num_samples, media_anomalie_rilevate / num_samples * 100);
