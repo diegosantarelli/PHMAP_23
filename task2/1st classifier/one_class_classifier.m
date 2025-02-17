@@ -1,4 +1,13 @@
-X_features = normalize(FeatureTable1{:, 3:end}, 'zscore'); % Normalizzazione Z-score
+import_data;
+
+test_set_task2 = test_set();
+
+test_set_task2.Task2 = NaN(height(test_set_task2), 1);
+
+% testData_task2 è la tabella filtrata con i Case dei fault classificati da Task 1
+[featureTable_t2_1, ~] = feature_gen_t2_1(training_data_t2);
+
+X_features = normalize(featureTable_t2_1{:, 3:end}, 'zscore'); % Normalizzazione Z-score
 
 k = 10;
 cv = cvpartition(size(X_features, 1), 'KFold', k);
@@ -32,18 +41,18 @@ end
 false_negative_rate = false_negatives_total / total_samples;
 fprintf('Tasso di falsi negativi complessivo: %.2f%%\n', false_negative_rate * 100);
 
-%% Test su rumore bianco ripetuto più volte
-num_samples = 1000;
-num_features = size(X_features, 2);
-num_tests = 100;
-
-results = zeros(num_tests, 1);
-for i = 1:num_tests
-    X_noise = randn(num_samples, num_features);
-    [isAnomaly_noise, ~] = isanomaly(ocsvm_model, X_noise);
-    results(i) = sum(isAnomaly_noise);
-end
-
-media_anomalie_rilevate = mean(results);
-fprintf('Media anomalie rilevate su rumore bianco (5 prove): %.2f su %d campioni (%.2f%%)\n', ...
-        media_anomalie_rilevate, num_samples, media_anomalie_rilevate / num_samples * 100);
+% %% Test su rumore bianco ripetuto più volte
+% num_samples = 1000;
+% num_features = size(X_features, 2);
+% num_tests = 100;
+% 
+% results = zeros(num_tests, 1);
+% for i = 1:num_tests
+%     X_noise = randn(num_samples, num_features);
+%     [isAnomaly_noise, ~] = isanomaly(ocsvm_model, X_noise);
+%     results(i) = sum(isAnomaly_noise);
+% end
+% 
+% media_anomalie_rilevate = mean(results);
+% fprintf('Media anomalie rilevate su rumore bianco (5 prove): %.2f su %d campioni (%.2f%%)\n', ...
+%         media_anomalie_rilevate, num_samples, media_anomalie_rilevate / num_samples * 100);

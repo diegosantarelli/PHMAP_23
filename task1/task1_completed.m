@@ -1,15 +1,15 @@
 import_data;
 
-test_set_task1 = test_set_task1();
+test_set_task1 = test_set();
 
 test_set_task1.Task1 = NaN(height(test_set_task1), 1);
 
 [featureTable_test, ~] = featureGenerationT1(test_set_task1);
 
-load('task1/results/MODELLO_FINALE.mat', 'baggedTreesTask1');
+load('task1/results/MODELLO_FINALE.mat', 'task1_model');
 
 % Predizione sui dati di test
-[yfit, scores] = baggedTreesTask1.predictFcn(featureTable_test);
+[yfit, scores] = task1_model.predictFcn(featureTable_test);
 
 % Associa i Member X ai Case 178, 179, ...
 member_to_case = 177 + (1:max(str2double(erase(featureTable_test.EnsembleID_, 'Member '))));
