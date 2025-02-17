@@ -1,58 +1,47 @@
-import_data;
+training_data_task2;
 
-test_set_task2 = test_set();
+% Generazione delle feature utilizzando la tua funzione
+[featureTable_t2_1st, ~] = feature_gen_t2_1st(training_set_task2);
 
-test_set_task2.Task2 = NaN(height(test_set_task2), 1);
+%%
+% Supponiamo che featureTable_t2_1st sia stato generato correttamente
+X_train = featureTable_t2_1st{:, 3:end}; % Supponiamo che le prime due colonne siano MemberID e Task2
 
-% testData_task2 è la tabella filtrata con i Case dei fault classificati da Task 1
-[featureTable_t2_1, ~] = feature_gen_t2_1(training_data_t2);
-
-X_features = normalize(featureTable_t2_1{:, 3:end}, 'zscore'); % Normalizzazione Z-score
-
-k = 10;
-cv = cvpartition(size(X_features, 1), 'KFold', k);
-
-false_negatives_total = 0;
-total_samples = 0;
+% K-fold Cross Validation per i dati noti (Task2 = 4)
+cv = cvpartition(size(X_train, 1), 'KFold', 5);
+kfold_results = zeros(size(X_train, 1), 1);
 
 for i = 1:cv.NumTestSets
-    X_train = X_features(training(cv, i), :);
-    X_val = X_features(test(cv, i), :);
-    
-    rng(42);
-    % Addestra il OCSVM (OutlierFraction 0 perché non ci sono anomalie nel training)
-    ocsvm_model = ocsvm(X_train, ...
-                    'Nu', 0.4, ...
-                    'KernelScale', 1, ...
-                    'NumExpansionDimensions', 17000);
+    trainIdx = cv.training(i);
+    testIdx = cv.test(i);
+
+    % Addestramento OCSVM su k-1 fold
+    model = ocsvm(X_train, StandardizeData=true, KernelScale="auto");
+
+    % Predizione sul fold di test
+    score = anomalyScore(model, X_train(testIdx, :));
+    kfold_results(testIdx) = isanomaly(score);
 
 
-    % Predizione sui dati noti di validazione
-    isAnomaly = ocsvm_model.isanomaly(X_val);
-
-    % Conta i falsi negativi (cioè i dati noti classificati come anomali)
-    false_negatives = sum(isAnomaly == -1);
-    false_negatives_total = false_negatives_total + false_negatives;
-    total_samples = total_samples + size(X_val, 1);
-
-    fprintf('Fold %d: Falsi negativi = %d su %d campioni\n', i, false_negatives, size(X_val, 1));
 end
 
-false_negative_rate = false_negatives_total / total_samples;
-fprintf('Tasso di falsi negativi complessivo: %.2f%%\n', false_negative_rate * 100);
+% Verifica falsi positivi (dati noti classificati come anomaly)
+falsi_positivi = sum(kfold_results == 1);
+disp(['Falsi positivi sui dati noti: ', num2str(falsi_positivi)]);
 
-% %% Test su rumore bianco ripetuto più volte
-% num_samples = 1000;
-% num_features = size(X_features, 2);
-% num_tests = 100;
+% %%
+% % Generazione di dati di rumore bianco
+% numSamples = 50; % Numero di campioni di rumore bianco
+% numFeatures = size(X_train, 2);
+% X_noise = randn(numSamples, numFeatures);
 % 
-% results = zeros(num_tests, 1);
-% for i = 1:num_tests
-%     X_noise = randn(num_samples, num_features);
-%     [isAnomaly_noise, ~] = isanomaly(ocsvm_model, X_noise);
-%     results(i) = sum(isAnomaly_noise);
-% end
+% % Addestramento modello finale su tutto il training set
+% ocsvmModel = fitcsvm(X_train, 'KernelFunction', 'rbf', 'Standardize', true, 'Nu', 0.5);
+% ocsvmModel = fitSVMPosterior(ocsvmModel);
 % 
-% media_anomalie_rilevate = mean(results);
-% fprintf('Media anomalie rilevate su rumore bianco (5 prove): %.2f su %d campioni (%.2f%%)\n', ...
-%         media_anomalie_rilevate, num_samples, media_anomalie_rilevate / num_samples * 100);
+% % Predizione sul rumore bianco
+% [~, score_noise] = predict(ocsvmModel, X_noise);
+% pred_noise = isanomaly(score_noise(:, 1));
+% anomalie_rumore_bianco = sum(pred_noise == 1);
+% disp(['Anomalie rilevate nel rumore bianco: ', num2str(anomalie_rumore_bianco)]);
+
