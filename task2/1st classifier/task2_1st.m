@@ -1,4 +1,5 @@
 import_data;
+task1_completed;
 
 training_set_task2 = labeledData(labeledData.Task2 == 2 | labeledData.Task2 == 3, {'Case', 'Task2'});
 training_set_task2.Task2(:) = 4;
@@ -68,13 +69,3 @@ end
 
 % Creiamo la tabella finale
 caseLabelTable = table(uniqueCases, finalLabels, 'VariableNames', {'Case', 'CaseLabel'});
-
-% Visualizziamo la tabella finale
-disp(caseLabelTable);
-
-% Test su rumore bianco per verifica
-numSamples = 100;
-numFeatures = size(featureTable_t2_1st, 2) - 2;
-X_noise = randn(numSamples, numFeatures);
-[isAnomaly_noise, ~] = isanomaly(finalModel, X_noise);
-disp(['Anomalie rilevate nel rumore bianco: ', num2str(sum(isAnomaly_noise))]);
