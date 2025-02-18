@@ -1,17 +1,17 @@
-function [finalModel, falsi_positivi] = one_class_classifier(training_set_task2, test_set, k)
+function [finalModel, falsi_positivi, featureTable_t2_1st, featureTable_test_t2] = one_class_classifier(training_set_task2, test_set, k)
     % Generazione delle feature utilizzando la tua funzione
     [featureTable_t2_1st, ~] = feature_gen_t2_1st(training_set_task2);
     [featureTable_test_t2, ~] = feature_gen_t2_1st(test_set);
 
     % Supponiamo che le tabelle delle feature siano state generate correttamente
-    X_train = featureTable_t2_1st{:, 3:end}; % Supponiamo che le prime due colonne siano MemberID e Task2
+    X_train = featureTable_t2_1st{:, 3:end}; % Supponiamo che le prime due colonne siano EnsembleID_ e Task2
     X_test = featureTable_test_t2{:, 3:end};
 
     cv = cvpartition(size(X_train, 1), 'KFold', k);
     kfold_results = zeros(size(X_train, 1), 1);
 
     % Addestramento Isolation Forest con IFOREST su tutto il dataset di training
-    finalModel = iforest(X_train, 'NumLearners', 100);
+    finalModel = iforest(X_train, 'NumLearners', 100, 'ContaminationFraction', 0.1);
 
     for i = 1:cv.NumTestSets
         trainIdx = cv.training(i);
@@ -30,14 +30,3 @@ function [finalModel, falsi_positivi] = one_class_classifier(training_set_task2,
     [isAnomaly_test, ~] = isanomaly(finalModel, X_test);
     disp(['Anomalie rilevate nel test set: ', num2str(sum(isAnomaly_test == 1))]);
 end
-
-%%
-% % Generazione di dati di rumore bianco
-% numSamples = 500; % Numero di campioni di rumore bianco
-% numFeatures = size(X_train, 2);
-% X_noise = randn(numSamples, numFeatures);
-% 
-% % Predizione sul rumore bianco usando lo stesso modello
-% [isAnomaly_noise, ~] = isanomaly(finalModel, X_noise);
-% anomalie_rumore_bianco = sum(isAnomaly_noise == 1);
-% disp(['Anomalie rilevate nel rumore bianco: ', num2str(anomalie_rumore_bianco)]);
