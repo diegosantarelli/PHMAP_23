@@ -61,11 +61,11 @@ for i = 1:height(uniqueCases)
     if numAnomalie >= floor(height(caseRows) / 2)
         finalLabel = 1; % Unknown anomaly
     else
-        finalLabel = 4; % Normale
+        finalLabel = 4; % Known Anomaly
     end
 
     finalLabels(i) = finalLabel;
 end
 
 % Creiamo la tabella finale
-caseLabelTable = table(uniqueCases, finalLabels, 'VariableNames', {'Case', 'CaseLabel'});
+results_t2_1st = table(uniqueCases, finalLabels, 'VariableNames', {'Case', 'CaseLabel'});
