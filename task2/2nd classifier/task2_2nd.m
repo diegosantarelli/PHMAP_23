@@ -1,4 +1,4 @@
-% task2_1st;
+task2_1st;
 
 % Filtra solo i casi con Task2 == 4 da caseLabelTable
 filteredCases = results_t2_1st.Case(results_t2_1st.CaseLabel == 4);
@@ -6,7 +6,6 @@ filteredCases = results_t2_1st.Case(results_t2_1st.CaseLabel == 4);
 training_set_task2_2nd = labeledData(labeledData.Task2 == 2 | labeledData.Task2 == 3, {'Case', 'Task2'});
 
 test_set_task2_2nd = results_t2_1st(results_t2_1st.CaseLabel == 4, {'Case', 'CaseLabel'});
-
 
 test_raw_data = test_set();
 
@@ -34,6 +33,8 @@ test_set_task2_2nd = test_set_task2_2nd(:, {'RawData', 'Task2'});
 test_set_task2_2nd.Properties.VariableNames = {'Case', 'Task2'};
 
 [featureTable_test_task2_2nd, ~] = feature_gen_t2_2nd(test_set_task2_2nd);
+
+load('task2/2nd classifier/results/rusBoostedTrees.mat', 'finalModel_task2_2nd');
 
 %% Addestrare un classificatore a distinguere tra Bubble Anomaly e Vaulve Fault
  % utilizzando come training set i 177 case etichettati, filtrando solo per
