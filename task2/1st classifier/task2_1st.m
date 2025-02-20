@@ -13,7 +13,7 @@ numRows = height(test_set_task2);
 nameStrings = arrayfun(@(x) sprintf('Case%d', x), startIndex:(startIndex+numRows-1), 'UniformOutput', false);
 test_set_task2.Name = nameStrings(:);
 
-% Filtra i nomi dei case in results_table dove Task1 == 1
+% Filtra i nomi dei case in results_table dove Task1 == 1C
 filteredCaseNames = results_table.Case(results_table.Task1 == 1);
 
 % Mantieni solo le righe di test_set_task2 i cui Name sono in filteredCaseNames
@@ -23,15 +23,22 @@ test_set_task2 = test_set_task2(ismember(test_set_task2.Name, filteredCaseNames)
 k = 5;
 [finalModel, falsi_positivi, featureTable_t2_1st, featureTable_test_t2] = one_class_classifier(training_set_task2, test_set_task2, k);
 
-% Mappatura Member -> Case per la tabella delle feature di test
-startIndex = 178;
+% Mappatura Member -> Case per la tabella delle feature di test basata su filteredCaseNames
 uniqueMembers = unique(featureTable_test_t2.EnsembleID_);
-memberToCaseMap = containers.Map(uniqueMembers, startIndex:(startIndex + numel(uniqueMembers) - 1));
+numUniqueMembers = numel(uniqueMembers);
+numFilteredCases = numel(filteredCaseNames);
 
-% Aggiungi la colonna CaseName alla tabella delle feature di test
+if numUniqueMembers ~= numFilteredCases
+    error('Mismatch tra il numero di members unici e il numero di Case filtrati!');
+end
+
+% Associa i Member ai Case filtrati SEGUENDO L'ORDINE dei filteredCaseNames
+memberToCaseMap = containers.Map(uniqueMembers, filteredCaseNames);
+
+% Aggiungi la colonna CaseName a featureTable_test_t2 usando la mappa
 featureTable_test_t2.CaseName = cell(height(featureTable_test_t2), 1);
 for i = 1:height(featureTable_test_t2)
-    featureTable_test_t2.CaseName{i} = sprintf('Case%d', memberToCaseMap(featureTable_test_t2.EnsembleID_{i}));
+    featureTable_test_t2.CaseName{i} = memberToCaseMap(featureTable_test_t2.EnsembleID_{i});
 end
 
 % Predizione per i member e calcolo del voto di maggioranza per ogni case
