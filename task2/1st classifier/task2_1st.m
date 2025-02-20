@@ -65,7 +65,7 @@ for i = 1:height(uniqueCases)
     disp(['Case ', currentCase, ' - Anomalie rilevate: ', num2str(numAnomalie), ' su ', num2str(height(caseRows))]);
 
     % Voto di maggioranza
-    if numAnomalie >= floor(height(caseRows) / 2)
+    if numAnomalie >= 3
         finalLabel = 1; % Unknown anomaly
     else
         finalLabel = 4; % Known Anomaly
