@@ -1,5 +1,5 @@
 %% Import delle label
-train_labels = readtable('dataset/train/labels.xlsx');
+train_labels = readtable('dataset/train/labels.xlsx', 'VariableNamingRule', 'preserve');
 train_labels.Properties.VariableNames(1:3) = {'Case', 'Spacecraft', 'Condition'};
 
 % Trasforma 'Yes'/'No' in 1/0

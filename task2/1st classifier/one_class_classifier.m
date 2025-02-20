@@ -12,7 +12,7 @@ function [finalModel, falsi_positivi, featureTable_t2_1st, featureTable_test_t2]
     kfold_results = zeros(size(X_train, 1), 1);
 
     % Addestramento Isolation Forest con IFOREST su tutto il dataset di training
-    finalModel = iforest(X_train, 'NumLearners', 100, 'ContaminationFraction', 0.01);
+    finalModel = iforest(X_train, 'NumLearners', 500, 'ContaminationFraction', 0.03);
 
     for i = 1:cv.NumTestSets
         trainIdx = cv.training(i);

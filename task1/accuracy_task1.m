@@ -1,8 +1,8 @@
 import_data;
 
-test_set_task1 = test_set_labeled();
+test_set_task1_labeled = test_set_labeled();
 
-[featureTable_test_t1labeled, ~] = featureGenerationTask1(test_set_task1);
+[featureTable_test_t1labeled, ~] = featureGenerationTask1(test_set_task1_labeled);
 
 load('task1/results/final_model_task1.mat', 'final_model_task1');
 
@@ -40,7 +40,7 @@ predictions_table = table(case_ids_final_str, yfit_final, ...
     'VariableNames', {'Name', 'PredictedTask1'});
 
 % Confronto con etichette reali
-results_comparison_table = innerjoin(predictions_table, test_set_task1(:, {'Name', 'Task1'}), 'Keys', 'Name');
+results_comparison_table = innerjoin(predictions_table, test_set_task1_labeled(:, {'Name', 'Task1'}), 'Keys', 'Name');
 
 % Calcolo accuratezza
 correct_predictions = sum(results_comparison_table.PredictedTask1 == results_comparison_table.Task1);
