@@ -1,6 +1,8 @@
 % import_data;
 
-training_set_task3 = labeledData(labeledData.Task3 ~= 0,{'Case','Task3'});
+% task2_2nd;
+
+training_set_task3 = labeledData(labeledData.Task3 ~= 0, {'Case', 'Task3'});
 
 test_set_task3 = test_set();
 
@@ -13,11 +15,10 @@ caseNames = strcat("Case", string(178:178+numRecords-1));
 % Aggiungere la colonna "Name" alla tabella test_set_task3
 test_set_task3.Name = caseNames';
 
-% Rinominare la colonna "Case" in "Name" in results_t2_2nd per evitare conflitti
-% results_t2_2nd.Properties.VariableNames{'Case'} = 'Name';
-
 % Filtrare results_t2_2nd per mantenere solo i Case con etichetta pari a 2
-filtered_results_t2 = results_t2_2nd(results_t2_2nd.CaseLabel_results_t2_2nd == 2, {'Name'});
+filtered_results_t2 = results_t2_2nd(results_t2_2nd.Task2 == 2, {'Case'});
+
+filtered_results_t2.Properties.VariableNames{'Case'} = 'Name';
 
 % Unire test_set_task3 con i Case filtrati, mantenendo solo le corrispondenze
 test_set_task3 = innerjoin(test_set_task3, filtered_results_t2, 'Keys', 'Name');
@@ -26,44 +27,72 @@ test_set_task3.Task3 = NaN(height(test_set_task3), 1);
 
 [featureTable_test_task3, ~] = feature_gen_t3(test_set_task3);
 
+% Creare una mappatura tra i Case originali e le finestre temporali
+numFeatureRows = height(featureTable_test_task3);
+numTestRows = height(test_set_task3);
+
+% Se featureTable ha più righe di test_set_task3, ripetiamo i nomi dei Case
+if numFeatureRows > numTestRows
+    repeatedNames = repelem(test_set_task3.Name, numFeatureRows / numTestRows);
+    featureTable_test_task3.Name = repeatedNames;
+else
+    featureTable_test_task3.Name = test_set_task3.Name;
+end
+
 load('task3/results/SubspaceKNN.mat', 'finalModel_task3');
 
 %%
 % Predire le etichette per tutte le finestre di featureTable_test_task3
-predicted_labels = finalModel_task3.predict(featureTable_test_task3);
+predicted_labels = finalModel_task3.predictFcn(featureTable_test_task3);
 
 % Aggiungere le predizioni alla tabella delle feature
 featureTable_test_task3.PredictedLabel = predicted_labels;
 
-% Aggregare le predizioni per ogni Case usando la moda (voting)
-grouped_results = groupsummary(featureTable_test_task3, 'Name', 'mode', 'PredictedLabel');
+% Verificare che la colonna 'Name' esista
+if ~ismember('Name', featureTable_test_task3.Properties.VariableNames)
+    error('La colonna "Name" non esiste in featureTable_test_task3!');
+end
+featureTable_test_task3.Name = string(featureTable_test_task3.Name);
 
-% Rinominare la colonna della moda per chiarezza
+% Aggregazione per Case con voto di maggioranza
+grouped_results = groupsummary(featureTable_test_task3, 'Name', 'mode', 'PredictedLabel');
+grouped_results.Properties.VariableNames{'Name'} = 'Case';
 grouped_results.Properties.VariableNames{'mode_PredictedLabel'} = 'Task3';
 
-% Creiamo una tabella completa con tutti i Case originali
-all_cases = caseNames'; % Contiene tutti i CaseXXX creati prima
+% Rimuovere eventuali colonne indesiderate da grouped_results
+colsToRemove = {'GroupCount', 'Task3_grouped_results'};
+grouped_results = removevars(grouped_results, intersect(colsToRemove, grouped_results.Properties.VariableNames));
 
-% Inizializziamo un vettore Task3 con tutti 0
-task3_labels = zeros(length(all_cases), 1);
+% Caricare il file CSV esistente con i risultati di Task 1 e Task 2
+results_t3 = readtable('results.csv', 'VariableNamingRule', 'preserve');
 
-% Creiamo una tabella completa con Task3 = 0 per tutti
-results_table = table(all_cases, task3_labels, 'VariableNames', {'Case', 'Task3'});
+% Se la colonna Task3 non esiste, la inizializziamo a 0
+if ~ismember('Task3', results_t3.Properties.VariableNames)
+    results_t3.Task3 = zeros(height(results_t3), 1);
+end
 
-% Unire le predizioni reali con la tabella completa (Left Join)
-results_table = outerjoin(results_table, grouped_results, 'LeftKeys', 'Case', 'RightKeys', 'Name', 'MergeKeys', true);
+% Unire le predizioni reali con il file esistente (Left Join)
+results_t3 = outerjoin(results_t3, grouped_results, 'LeftKeys', 'Case', 'RightKeys', 'Case', 'MergeKeys', true);
 
-% Sostituire i NaN con 0 nei Task3
-results_table.Task3(isnan(results_table.Task3)) = 0;
+% Se Task3_grouped_results esiste, copiarne i valori in Task3 e rimuoverla
+if ismember('Task3_grouped_results', results_t3.Properties.VariableNames)
+    results_t3.Task3 = results_t3.Task3_grouped_results;
+    results_t3 = removevars(results_t3, 'Task3_grouped_results'); % Rimuovere la colonna temporanea
+end
 
-% Rinominare correttamente la colonna Case
-results_table.Properties.VariableNames{'Case'} = 'Case';
+% Sostituire i NaN con 0 in Task3
+results_t3.Task3(isnan(results_t3.Task3)) = 0;
 
-% Salvare il file in formato CSV
-writetable(results_table, 'results.csv');
+% Rimuovere la colonna GroupCount se presente
+if ismember('GroupCount', results_t3.Properties.VariableNames)
+    results_t3 = removevars(results_t3, 'GroupCount');
+end
+
+% Mantieni solo le colonne desiderate nel file finale
+results_t3 = results_t3(:, {'Case', 'Task1', 'Task2', 'Task3'});
+
+% Salvare il file aggiornato con Task 3 senza sovrascrivere altri dati
+writetable(results_t3, 'results.csv');
 
 % Messaggio di conferma
-disp('File results.csv salvato con successo!');
-
-
-
+disp('File results.csv aggiornato con solo Task1, Task2 e Task3!');
