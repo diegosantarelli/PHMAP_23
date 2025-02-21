@@ -16,7 +16,7 @@ caseNames = strcat("Case", string(178:178+numRecords-1));
 test_set_task3.Name = caseNames';
 
 % Filtrare results_t2_2nd per mantenere solo i Case con etichetta pari a 2
-filtered_results_t2 = results_t2_2nd(results_t2_2nd.Task2 == 2, {'Case'});
+filtered_results_t2 = results_t2_2nd(results_t2_2nd.CaseLabel_results_t2_2nd == 2, {'Case'});
 
 filtered_results_t2.Properties.VariableNames{'Case'} = 'Name';
 

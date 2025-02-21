@@ -1,4 +1,4 @@
-task2_1st;
+%task2_1st;
 
 % Filtra solo i casi con Task2 == 4 da caseLabelTable
 filteredCases = results_t2_1st.Case(results_t2_1st.CaseLabel == 4);
