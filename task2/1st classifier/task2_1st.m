@@ -1,5 +1,5 @@
-%import_data;
-%task1_completed;
+import_data;
+task1_completed;
 
 training_set_task2 = labeledData(labeledData.Task2 == 2 | labeledData.Task2 == 3, {'Case', 'Task2'});
 training_set_task2.Task2(:) = 4;
@@ -21,7 +21,7 @@ test_set_task2 = test_set_task2(ismember(test_set_task2.Name, filteredCaseNames)
 
 % Richiama la funzione
 k = 5;
-%[finalModel, falsi_positivi, featureTable_t2_1st, featureTable_test_t2] = one_class_classifier(training_set_task2, test_set_task2, k);
+[finalModel, falsi_positivi, featureTable_t2_1st, featureTable_test_t2] = one_class_classifier(training_set_task2, test_set_task2, k);
 [bestModel, bestParams, bestFalsiPositivi, featureTable_t2_1st, featureTable_test_t2] = prova(training_set_task2, test_set_task2, k);
 disp(bestParams);
 
