@@ -118,6 +118,3 @@ accuratezza_2nd = sum(predizioni_corrette_2nd) / height(merged_table_2nd);
 % Visualizzare l'accuratezza
 disp(['Accuratezza del secondo classificatore: ', num2str(accuratezza_2nd)]);
 
-% Esportare la tabella con le colonne rinominate in un file CSV
-writetable(merged_table_2nd, 'confronto_predizioni_t2_2nd.csv');
-
