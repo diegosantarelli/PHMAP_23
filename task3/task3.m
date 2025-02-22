@@ -1,6 +1,6 @@
 % import_data;
 
-% task2_2nd;
+task2_2nd;
 
 training_set_task3 = labeledData(labeledData.Task3 ~= 0, {'Case', 'Task3'});
 
