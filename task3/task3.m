@@ -1,5 +1,3 @@
-% import_data;
-
 task2_2nd;
 
 training_set_task3 = labeledData(labeledData.Task3 ~= 0, {'Case', 'Task3'});
@@ -15,8 +13,14 @@ caseNames = strcat("Case", string(178:178+numRecords-1));
 % Aggiungere la colonna "Name" alla tabella test_set_task3
 test_set_task3.Name = caseNames';
 
-% Filtrare results_t2_2nd per mantenere solo i Case con etichetta pari a 2
-filtered_results_t2 = results_t2_2nd(results_t2_2nd.CaseLabel_results_t2_2nd == 2, {'Case'});
+% if ismember('CaseLabel_results_t2_2nd', test_set_task3.Properties.VariableNames)
+%     filtered_results_t2 = results_t2_2nd(results_t2_2nd.CaseLabel_results_t2_2nd == 2, {'Case'});
+% else
+%     % Fai qualcos'altro se 'NomeColonna2' esiste
+%     filtered_results_t2 = results_t2_2nd(results_t2_2nd.Task2 == 2, {'Case'});
+% end
+
+filtered_results_t2 = results_t2_2nd(results_t2_2nd.Task2 == 2, {'Case'});
 
 filtered_results_t2.Properties.VariableNames{'Case'} = 'Name';
 
