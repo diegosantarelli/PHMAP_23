@@ -2,9 +2,19 @@ function [bestModel, bestParams, bestFalsiPositivi, featureTable_t2_1st, feature
     % Generazione delle feature
     [featureTable_t2_1st, ~] = feature_gen_t2_1st(training_set_task2); 
     [featureTable_test_t2, ~] = feature_gen_t2_1st(test_set);
+    % [featureTable_t2_1st, ~] = prova4_128_VARIANCE(training_set_task2); 
+    % [featureTable_test_t2, ~] = prova4_128_VARIANCE(test_set);
 
-    X_train = featureTable_t2_1st{:, 3:end};
-    X_test = featureTable_test_t2{:, 3:end};
+    % Trova le colonne da escludere
+    columns_to_discard = {'EnsembleID_', 'Task2', 'FRM_1/TimeStart', 'FRM_1/TimeEnd'};
+    
+    % Seleziona solo le feature numeriche utili
+    feature_columns = setdiff(featureTable_t2_1st.Properties.VariableNames, columns_to_discard);
+    
+    % Estrai solo le colonne corrette
+    X_train = featureTable_t2_1st{:, feature_columns};
+    X_test = featureTable_test_t2{:, feature_columns};
+
 
     cv = cvpartition(size(X_train, 1), 'KFold', k);
 
