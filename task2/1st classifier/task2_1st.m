@@ -14,14 +14,27 @@ numRows = height(test_set_task2);
 nameStrings = arrayfun(@(x) sprintf('Case%d', x), startIndex:(startIndex+numRows-1), 'UniformOutput', false);
 test_set_task2.Name = nameStrings(:);
 
-% Filtra i nomi dei case in results_table dove Task1 == 1C
+% Filtra i nomi dei case in results_table dove Task1 == 1
 filteredCaseNames = results_table.Case(results_table.Task1 == 1);
 test_set_task2 = test_set_task2(ismember(test_set_task2.Name, filteredCaseNames), :);
 
-% Richiama la funzione per generare le feature
-k = 5;
-[bestModel, bestParams, bestFalsiPositivi, featureTable_t2_1st, featureTable_test_t2] = one_class_classifier_gridsearch(training_set_task2, test_set_task2, k);
-disp(bestParams);
+% Percorso del file salvato
+model_filename = 'task2/1st classifier/results/best_model_t2_1st.mat';
+
+if isfile(model_filename)
+    % Se il modello esiste, caricalo invece di riaddestrarlo
+    load(model_filename, 'bestModel', 'bestParams');
+    disp('Modello caricato con successo!');
+else
+    % Se il modello NON esiste, esegui la grid search e addestralo
+    k = 5;
+    [bestModel, bestParams, bestFalsiPositivi, featureTable_t2_1st, featureTable_test_t2] = one_class_classifier_gridsearch(training_set_task2, test_set_task2, k);
+    
+    % Salva il modello appena addestrato
+    save(model_filename, 'bestModel', 'bestParams');
+    disp('Modello salvato con successo dopo il training.');
+end
+
 
 % Mappatura Member -> Case per la tabella delle feature di test
 uniqueMembers = unique(featureTable_test_t2.EnsembleID_);
