@@ -30,4 +30,4 @@ predizioni_corrette_t4 = merged_table_t4.CaseLabel_results_t4 == merged_table_t4
 accuratezza_t4 = sum(predizioni_corrette_t4) / height(merged_table_t4);
 
 % Visualizzare l'accuratezza
-disp(['Accuratezza del classificatore Task 4: ', num2str(accuratezza_t3)]);
+disp(['Accuratezza del classificatore Task 4: ', num2str(accuratezza_t4)]);
