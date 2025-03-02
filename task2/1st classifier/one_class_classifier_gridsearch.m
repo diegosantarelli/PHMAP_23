@@ -1,4 +1,5 @@
 function [bestModel, bestParams, bestFalsiPositivi, featureTable_t2_1st, featureTable_test_t2] = one_class_classifier_gridsearch(training_set_task2, test_set, k)
+    
     % Generazione delle feature
     [featureTable_t2_1st, ~] = feature_gen_t2_1st(training_set_task2); 
     [featureTable_test_t2, ~] = feature_gen_t2_1st(test_set);
@@ -15,7 +16,8 @@ function [bestModel, bestParams, bestFalsiPositivi, featureTable_t2_1st, feature
     X_train = featureTable_t2_1st{:, feature_columns};
     X_test = featureTable_test_t2{:, feature_columns};
 
-    rng(75); % Seed fisso per garantire risultati stabili
+    % Seed fisso per garantire risultati stabili
+    rng(75);
     cv = cvpartition(size(X_train, 1), 'KFold', k);
 
     % Definizione della griglia di parametri
