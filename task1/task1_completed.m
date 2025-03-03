@@ -1,5 +1,3 @@
-import_data;
-
 test_set_task1 = test_set();
 
 test_set_task1.Task1 = NaN(height(test_set_task1), 1);

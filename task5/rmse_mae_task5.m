@@ -1,4 +1,4 @@
-%task5;
+task5;
 
 %%
 % **Caricamento delle etichette reali dal file answer.csv**
@@ -40,5 +40,5 @@ mae_t5 = mean(abs(y_true - y_pred));
 
 %%
 % **Visualizzare i risultati**
-disp(['RMSE del Task 5: ', num2str(rmse_t5)]);
-disp(['MAE del Task 5: ', num2str(mae_t5)]);
+disp(['RMSE del quinto task: ', num2str(rmse_t5)]);
+disp(['MAE del quinto task: ', num2str(mae_t5)]);

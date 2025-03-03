@@ -1,5 +1,3 @@
-task2_2nd;
-
 training_set_task3 = labeledData(labeledData.Task3 ~= 0, {'Case', 'Task3'});
 
 test_set_task3 = test_set();
@@ -13,14 +11,18 @@ caseNames = strcat("Case", string(178:178+numRecords-1));
 % Aggiungere la colonna "Name" alla tabella test_set_task3
 test_set_task3.Name = caseNames';
 
-% if ismember('CaseLabel_results_t2_2nd', test_set_task3.Properties.VariableNames)
-%     filtered_results_t2 = results_t2_2nd(results_t2_2nd.CaseLabel_results_t2_2nd == 2, {'Case'});
-% else
-%     % Fai qualcos'altro se 'NomeColonna2' esiste
-%     filtered_results_t2 = results_t2_2nd(results_t2_2nd.Task2 == 2, {'Case'});
-% end
+% Controlla il nome corretto della colonna Task2
+colName_t3 = "";
+if ismember('Task2', results_t2_2nd.Properties.VariableNames)
+    colName_t3 = 'Task2';
+elseif ismember('CaseLabel_results_t2_2nd', results_t2_2nd.Properties.VariableNames)
+    colName_t3 = 'CaseLabel_results_t2_2nd';
+else
+    error('Errore: né Task2 né CaseLabel_results_t2_2nd trovati in results_t2_2nd!');
+end
 
-filtered_results_t2 = results_t2_2nd(results_t2_2nd.Task2 == 2, {'Case'});
+% Usa il nome corretto per filtrare i dati
+filtered_results_t2 = results_t2_2nd(results_t2_2nd.(colName_t3) == 2, {'Case'});
 
 filtered_results_t2.Properties.VariableNames{'Case'} = 'Name';
 
@@ -93,7 +95,8 @@ if ismember('GroupCount', results_t3.Properties.VariableNames)
 end
 
 % Mantieni solo le colonne desiderate nel file finale
-results_t3 = results_t3(:, {'Case', 'Task1', 'Task2', 'Task3'});
+varsToKeep = intersect(results_t3.Properties.VariableNames, {'Case', 'Task1', 'Task2', 'Task3'});
+results_t3 = results_t3(:, varsToKeep);
 
 % Salvare il file aggiornato con Task 3 senza sovrascrivere altri dati
 writetable(results_t3, 'results.csv');

@@ -13,4 +13,4 @@ merged_table = innerjoin(results_table, test_set_labeled_t1, 'Keys', 'Case');
 correct_predictions = merged_table.Task1 == merged_table.CaseLabel;
 accuracy = sum(correct_predictions) / height(merged_table);
 
-disp(['Accuratezza del modello: ', num2str(accuracy * 100), '%']);
+disp(['Accuratezza del primo task: ', num2str(accuracy * 100), '%']);

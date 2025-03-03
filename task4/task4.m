@@ -1,5 +1,3 @@
-%task2_2nd;
-
 training_set_task4 = labeledData(labeledData.Task4 ~= 0, {'Case', 'Task4'});
 
 %%
@@ -35,10 +33,6 @@ end
 % Shuffle finale per evitare pattern ripetitivi
 augmented_data = augmented_data(randperm(height(augmented_data)), :);
 
-% Stampa dimensioni per verifica
-disp(['Dimensione originale del training set: ', num2str(height(labeledData(labeledData.Task4 ~= 0, :)))]);
-disp(['Dimensione dopo Data Augmentation: ', num2str(height(augmented_data))]);
-
 % Il dataset aumentato ora può essere usato per il training
 training_set_task4 = augmented_data;
 
@@ -53,7 +47,18 @@ caseNames = strcat("Case", string(178:178+numRecords-1));
 
 test_set_task4.Name = caseNames';
 
-filtered_results_t2 = results_t2_2nd(results_t2_2nd.Task2 == 3, {'Case'});
+% Controlla il nome corretto della colonna Task2
+colName_t4 = "";
+if ismember('Task2', results_t2_2nd.Properties.VariableNames)
+    colName_t4 = 'Task2';
+elseif ismember('CaseLabel_results_t2_2nd', results_t2_2nd.Properties.VariableNames)
+    colName_t4 = 'CaseLabel_results_t2_2nd';
+else
+    error('Errore: né Task2 né CaseLabel_results_t2_2nd trovati in results_t2_2nd!');
+end
+
+% Usa il nome corretto per filtrare i dati
+filtered_results_t2 = results_t2_2nd(results_t2_2nd.(colName_t4) == 3, {'Case'});
 
 filtered_results_t2.Properties.VariableNames{'Case'} = 'Name';
 
@@ -99,6 +104,8 @@ grouped_results.Properties.VariableNames{'mode_PredictedLabel'} = 'Task4';
 colsToRemove = {'GroupCount', 'Task4_grouped_results'};
 grouped_results = removevars(grouped_results, intersect(colsToRemove, grouped_results.Properties.VariableNames));
 
+results_t3.Properties.VariableNames{'CaseLabel_results_t3'} = 'Task3';
+
 % Caricare il file CSV esistente con i risultati di Task 1 e Task 2
 results_t4 = readtable('results.csv', 'VariableNamingRule', 'preserve');
 
@@ -132,91 +139,3 @@ writetable(results_t4, 'results.csv');
 
 % Messaggio di conferma
 disp('File results.csv aggiornato con solo Task1, Task2, Task3 e Task4!');
-
-
-
-
-
-
-
-
-% 
-% %% **Caricamento dei dati**
-% % results = readtable('results.csv', 'VariableNamingRule', 'preserve'); % Carica tutte le colonne esistenti
-% 
-% % Seleziona solo i Case con Task2 == 3
-% filtered_results_t2 = results_t2_2nd(results_t2_2nd.Task2 == 3, {'Case'});
-% filtered_results_t2.Properties.VariableNames{'Case'} = 'Name';
-% 
-% % Filtra il test set usando solo i case validi dal Task2
-% test_set_task4 = test_set();
-% numRecords = height(test_set_task4);
-% 
-% % Creare un array di nomi "CaseXXX"
-% caseNames = strcat("Case", string(178:178+numRecords-1));
-% test_set_task4.Name = caseNames';
-% 
-% % Effettuare l'inner join per mantenere solo i case validi
-% test_set_task4 = innerjoin(test_set_task4, filtered_results_t2, 'Keys', 'Name');
-% 
-% % Inizializza Task4 con NaN per le previsioni
-% test_set_task4.Task4 = NaN(height(test_set_task4), 1);
-% 
-% % Genera le feature per il test set del Task4
-% [featureTable_test_task4, ~] = prova_t4(test_set_task4);
-% 
-% %% **Assegna i nomi dei Case alle feature per il voting**
-% numFeatureRows = height(featureTable_test_task4);
-% numTestRows = height(test_set_task4);
-% 
-% if numFeatureRows > numTestRows
-%     repeatedNames = repelem(test_set_task4.Name, numFeatureRows / numTestRows);
-%     featureTable_test_task4.Name = repeatedNames;
-% else
-%     featureTable_test_task4.Name = test_set_task4.Name;
-% end
-% 
-% %% **Effettua le previsioni**
-% load('task4/results/baggedTrees_t4.mat', 'prova_model_t4');
-% 
-% % **Verifica che ci siano dati**
-% if isempty(featureTable_test_task4)
-%     warning('featureTable_test_task4 è vuoto, impossibile fare previsioni.');
-%     return;
-% end
-% 
-% % **Previsione per ogni membro**
-% predicted_labels = prova_model_t4.predictFcn(featureTable_test_task4);
-% 
-% % **Aggiungere le predizioni alla tabella delle feature**
-% featureTable_test_task4.PredictedLabel = predicted_labels;
-% 
-% % **Aggregazione per Case con voto di maggioranza (Metodo Originale con 82% Accuracy)**
-% grouped_results = groupsummary(featureTable_test_task4, 'Name', 'mode', 'PredictedLabel');
-% grouped_results.Properties.VariableNames{'Name'} = 'Case';
-% grouped_results.Properties.VariableNames{'mode_PredictedLabel'} = 'Task4';
-% 
-% %% **Aggiornamento del file results.csv senza sovrascrivere altre colonne**
-% % Se `Task4` non esiste, lo inizializziamo a 0 per tutti i Case
-% if ~ismember('Task4', results.Properties.VariableNames)
-%     results.Task4 = zeros(height(results), 1);
-% end
-% 
-% % **Mappa i risultati nel file results.csv senza eliminare `Task3`**
-% for i = 1:height(grouped_results)
-%     case_idx = strcmp(results.Case, grouped_results.Case(i));
-%     results.Task4(case_idx) = grouped_results.Task4(i);
-% end
-% 
-% % **Sostituiamo eventuali NaN con 0**
-% results.Task4(isnan(results.Task4)) = 0;
-% 
-% % **Manteniamo solo le colonne originali**
-% colonne_originali = {'Case', 'Task1', 'Task2', 'Task3', 'Task4'};
-% colonne_presenti = intersect(colonne_originali, results.Properties.VariableNames, 'stable');
-% results = results(:, colonne_presenti); % Riordiniamo e manteniamo solo le colonne corrette
-% 
-% % **Salva il file aggiornato senza rimuovere Task3**
-% writetable(results, 'results.csv', 'WriteMode', 'overwrite'); 
-% 
-% disp('File results.csv aggiornato correttamente senza sovrascrivere Task3!');

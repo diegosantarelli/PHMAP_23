@@ -35,5 +35,5 @@ predizioni_corrette_2nd = merged_table_2nd.CaseLabel_results_t2_2nd == merged_ta
 accuratezza_2nd = sum(predizioni_corrette_2nd) / height(merged_table_2nd);
 
 % Visualizzare l'accuratezza
-disp(['Accuratezza del secondo classificatore: ', num2str(accuratezza_2nd)]);
+disp(['Accuratezza del secondo task: ', num2str(accuratezza_2nd)]);
 

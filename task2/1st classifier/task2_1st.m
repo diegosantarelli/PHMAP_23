@@ -1,5 +1,3 @@
-task1_completed;
-
 % Seleziona solo i dati di training con Task2 == 2 o Task2 == 3
 training_set_task2 = labeledData(labeledData.Task2 == 2 | labeledData.Task2 == 3, {'Case', 'Task2'});
 training_set_task2.Task2(:) = 4; % Uniformiamo l'etichetta

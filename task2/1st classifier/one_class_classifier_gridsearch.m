@@ -3,8 +3,6 @@ function [bestModel, bestParams, bestFalsiPositivi, featureTable_t2_1st, feature
     % Generazione delle feature
     [featureTable_t2_1st, ~] = feature_gen_t2_1st(training_set_task2); 
     [featureTable_test_t2, ~] = feature_gen_t2_1st(test_set);
-    % [featureTable_t2_1st, ~] = prova4_128_VARIANCE(training_set_task2); 
-    % [featureTable_test_t2, ~] = prova4_128_VARIANCE(test_set);
 
     % Trova le colonne da escludere
     columns_to_discard = {'EnsembleID_', 'Task2', 'FRM_1/TimeStart', 'FRM_1/TimeEnd'};

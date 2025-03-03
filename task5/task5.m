@@ -1,5 +1,3 @@
-%task4;
-
 training_set_task5 = labeledData(labeledData.Task5 ~= 100, {'Case', 'Task5'});
 
 %%
@@ -54,7 +52,17 @@ caseNames = strcat("Case", string(178:178+numRecords-1));
 
 test_set_task5.Name = caseNames';
 
-filtered_results_t4 = results_t4(results_t4.CaseLabel_results_t4 ~= 0, {'Case'});
+colName = "";
+if ismember('Task4', results_t4.Properties.VariableNames)
+    colName = 'Task4';
+elseif ismember('CaseLabel_results_t4', results_t4.Properties.VariableNames)
+    colName = 'CaseLabel_results_t4';
+else
+    error('Errore: né Task4 né CaseLabel_results_t4 trovati in results_t4!');
+end
+
+% Usa il nome corretto della colonna
+filtered_results_t4 = results_t4(results_t4.(colName) ~= 0, {'Case'});
 filtered_results_t4.Properties.VariableNames{'Case'} = 'Name';
 
 test_set_task5 = innerjoin(test_set_task5, filtered_results_t4, 'Keys', 'Name');
