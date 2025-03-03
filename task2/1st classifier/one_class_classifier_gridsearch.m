@@ -15,7 +15,7 @@ function [bestModel, bestParams, bestFalsiPositivi, featureTable_t2_1st, feature
     X_test = featureTable_test_t2{:, feature_columns};
 
     % Seed fisso per garantire risultati stabili
-    rng(75);
+    rng(69);
     cv = cvpartition(size(X_train, 1), 'KFold', k);
 
     % Definizione della griglia di parametri

@@ -88,6 +88,6 @@ end
 % Creiamo la tabella finale con i risultati
 results_t2_1st = table(uniqueCases, finalLabels, 'VariableNames', {'Case', 'CaseLabel'});
 
-% Verifica finale: controlla che training e test abbiano lo stesso numero di feature
-disp(['Numero di feature nel training set: ', num2str(size(featureTable_t2_1st, 2) - 2)]); % Escludiamo Case e Task2
-disp(['Numero di feature nel test set (senza CaseName): ', num2str(size(numericData, 2))]);
+% % Verifica finale: controlla che training e test abbiano lo stesso numero di feature
+% disp(['Numero di feature nel training set: ', num2str(size(featureTable_t2_1st, 2) - 2)]); % Escludiamo Case e Task2
+% disp(['Numero di feature nel test set (senza CaseName): ', num2str(size(numericData, 2))]);

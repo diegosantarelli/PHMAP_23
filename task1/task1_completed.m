@@ -2,13 +2,8 @@ test_set_task1 = test_set();
 
 test_set_task1.Task1 = NaN(height(test_set_task1), 1);
 
-% [featureTable_test, ~] = featureGenerationTask1(test_set_task1);
-% [featureTable_test, ~] = feat_gen_costo4(test_set_task1);
 [featureTable_test, ~] = feat_gen_rus(test_set_task1);
 
-% save('task1/results/rus_boosted.mat', 'rus_boosted');
-%load('task1/results/final_model_task1.mat', 'final_model_task1');
-% load('task1/results/final_model_t1_costo4.mat', 'final_model_t1_costo4');
 load('task1/results/rus_boosted.mat', 'rus_boosted');
 
 % Predizione sui dati di test

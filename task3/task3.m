@@ -100,6 +100,3 @@ results_t3 = results_t3(:, varsToKeep);
 
 % Salvare il file aggiornato con Task 3 senza sovrascrivere altri dati
 writetable(results_t3, 'results.csv');
-
-% Messaggio di conferma
-disp('File results.csv aggiornato con solo Task1, Task2 e Task3!');

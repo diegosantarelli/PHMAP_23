@@ -104,8 +104,6 @@ grouped_results.Properties.VariableNames{'mode_PredictedLabel'} = 'Task4';
 colsToRemove = {'GroupCount', 'Task4_grouped_results'};
 grouped_results = removevars(grouped_results, intersect(colsToRemove, grouped_results.Properties.VariableNames));
 
-results_t3.Properties.VariableNames{'CaseLabel_results_t3'} = 'Task3';
-
 % Caricare il file CSV esistente con i risultati di Task 1 e Task 2
 results_t4 = readtable('results.csv', 'VariableNamingRule', 'preserve');
 
@@ -136,6 +134,3 @@ results_t4 = results_t4(:, {'Case', 'Task1', 'Task2', 'Task3', 'Task4'});
 
 % Salvare il file aggiornato con Task 3 senza sovrascrivere altri dati
 writetable(results_t4, 'results.csv');
-
-% Messaggio di conferma
-disp('File results.csv aggiornato con solo Task1, Task2, Task3 e Task4!');

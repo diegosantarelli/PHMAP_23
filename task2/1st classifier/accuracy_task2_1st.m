@@ -1,5 +1,4 @@
 % =================== CARICAMENTO DATI ===================
-disp('🔹 Caricamento del file CSV con colonne preservate...');
 data = readtable('dataset/test/answer.csv', 'VariableNamingRule', 'preserve');
 
 % Rinominare 'ID' in 'Name' e trasformare i valori in 'CaseXXX'
@@ -12,9 +11,6 @@ test_set_labeled_t2 = data(:, {'Name', 'task2'});
 % Rimuovere i record con task2 == 0
 test_set_labeled_t2 = test_set_labeled_t2(test_set_labeled_t2.task2 ~= 0, :);
 
-% Verifica che i record siano stati eliminati correttamente
-disp(['Record rimanenti dopo rimozione di task2 == 0: ', num2str(height(test_set_labeled_t2))]);
-
 % Sostituire i valori 2 e 3 con 4
 test_set_labeled_t2.task2(ismember(test_set_labeled_t2.task2, [2, 3])) = 4;
 
@@ -22,15 +18,7 @@ test_set_labeled_t2.task2(ismember(test_set_labeled_t2.task2, [2, 3])) = 4;
 test_set_labeled_t2.Properties.VariableNames = {'Case', 'Task2'};
 
 % =================== UNIONE DEI RISULTATI ===================
-disp('Unione delle tabelle in base alla colonna "Case"...');
 merged_table = innerjoin(results_t2_1st, test_set_labeled_t2, 'Keys', 'Case');
-
-% Verifica che l'unione sia avvenuta correttamente
-disp(['Numero di record uniti: ', num2str(height(merged_table))]);
-
-% Controllare i nomi effettivi delle colonne
-disp('Nomi delle colonne in merged_table:');
-disp(merged_table.Properties.VariableNames);
 
 % =================== CALCOLO ACCURATEZZA ===================
 % Identificazione della colonna corretta per il confronto

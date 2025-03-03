@@ -33,10 +33,6 @@ end
 % Shuffle finale per evitare pattern ripetitivi
 augmented_data = augmented_data(randperm(height(augmented_data)), :);
 
-% Stampa dimensioni per verifica
-disp(['Dimensione originale del training set: ', num2str(height(training_set_task5))]);
-disp(['Dimensione dopo Data Augmentation: ', num2str(height(augmented_data))]);
-
 % Il dataset aumentato ora può essere usato per la regressione
 training_set_task5 = augmented_data;
 
@@ -136,7 +132,4 @@ results_t5 = results_t5(:, {'Case', 'Task1', 'Task2', 'Task3', 'Task4', 'Task5'}
 
 % Salvare il file aggiornato con Task 3 senza sovrascrivere altri dati
 writetable(results_t5, 'results.csv');
-
-% Messaggio di conferma
-disp('File results.csv aggiornato con solo Task1, Task2, Task3, Task4 e Task5!');
 

@@ -1,7 +1,7 @@
 function test_set = test_set()
 
     %% Import delle label
-    test_labels = readtable('dataset/test/labels_spacecraft.xlsx');
+    test_labels = readtable('dataset/test/labels_spacecraft.xlsx', 'VariableNamingRule', 'preserve');
     test_labels.Properties.VariableNames(1:2) = {'Case', 'Spacecraft'};
 
     %% Import dei dati
