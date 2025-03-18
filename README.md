@@ -232,9 +232,9 @@ Per ulteriori informazioni sulla competizione PHMAP 2023, visita il sito ufficia
 ---
 
 ## ✍🏼 Autori del progetto
-- Diego Santarelli (Matricola: 1118746)
-- Simone Recinelli (Matricola: 1118757)
-- Andrea Marini (Matricola: 1118778)
+- Diego Santarelli (Matr. 1118746)
+- Simone Recinelli (Matr. 1118757)
+- Andrea Marini (Matr. 1118778)
 
 ---
 
