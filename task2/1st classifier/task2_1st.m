@@ -26,7 +26,6 @@ else
     % Se il modello NON esiste, eseguiamo la grid search e addestriamo il modello
     k = 5;
     [bestModel, bestParams, bestFalsiPositivi, featureTable_t2_1st, featureTable_test_t2, selected_feature_names_t2] = one_class_classifier_gridsearch(training_set_task2, test_set_task2, k);
-
     
     % Salvataggio del modello
     save(model_filename, 'bestModel', 'bestParams');
@@ -52,7 +51,6 @@ end
 if iscell(filteredCaseNames)
     filteredCaseNames = cellfun(@double, filteredCaseNames);
 end
-
 
 % Creazione della mappa tra Members e Case filtrati
 memberToCaseMap = containers.Map(uniqueMembers, filteredCaseNames);

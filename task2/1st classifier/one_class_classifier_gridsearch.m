@@ -82,7 +82,7 @@ function [bestModel, bestParams, bestFalsiPositivi, featureTable_t2_1st, feature
         
         featureTable_t2_1st = cell2table(feature_rows_t2, 'VariableNames', column_names_t2);
     else
-        error('❌ Errore: feature_rows_t2 è vuoto, impossibile creare la tabella delle feature.');
+        error('Errore: feature_rows_t2 è vuoto, impossibile creare la tabella delle feature.');
     end
 
     %% **Selezione delle feature migliori per il Task 2**
@@ -98,7 +98,7 @@ function [bestModel, bestParams, bestFalsiPositivi, featureTable_t2_1st, feature
     
     % Se il numero di feature disponibili è zero, genera un errore
     if num_features_available == 0
-        error('❌ Errore: Nessuna feature disponibile per la selezione.');
+        error('Errore: Nessuna feature disponibile per la selezione.');
     end
     
     % Ora selezioniamo le migliori feature
@@ -161,7 +161,7 @@ function [bestModel, bestParams, bestFalsiPositivi, featureTable_t2_1st, feature
 
         featureTable_test_t2 = cell2table(feature_rows_test_t2, 'VariableNames', column_names_t2);
     else
-        error('❌ Errore: feature_rows_test_t2 è vuoto, impossibile creare la tabella delle feature di test.');
+        error('Errore: feature_rows_test_t2 è vuoto, impossibile creare la tabella delle feature di test.');
     end
 
     %% **Addestramento Isolation Forest**
