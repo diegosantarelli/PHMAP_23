@@ -74,9 +74,65 @@ Il repository è organizzato come segue:
 
 ---
 
+## 🔧 Requisiti di Sistema
+Per eseguire correttamente il progetto, è necessario avere MATLAB e i seguenti toolbox installati:
+
+1. **MATLAB R2023a** o successivo (ambiente di sviluppo)
+2. **MATLAB Test** (per test e validazione)
+3. **Parallel Computing Toolbox** (per elaborazioni parallele e accelerazione del calcolo)
+4. **Statistics and Machine Learning Toolbox** (per la classificazione e l'analisi statistica)
+5. **Deep Learning Toolbox** (per modelli basati su reti neurali)
+6. **Curve Fitting Toolbox** (per il fitting dei dati)
+7. **Text Analytics Toolbox** (per l'analisi di testi, se applicabile)
+8. **Predictive Maintenance Toolbox** (per l'analisi predittiva dei guasti)
+9. **Signal Processing Toolbox** (per l'elaborazione di segnali)
+10. **Wavelet Toolbox** (per la trasformata wavelet e analisi di segnali)
+11. **Audio Toolbox** (per l'analisi di segnali audio, se applicabile)
+12. **DSP System Toolbox** (per l'elaborazione digitale dei segnali)
+13. **System Identification Toolbox** (per la modellazione di sistemi dinamici)
+14. **Econometrics Toolbox** (per l'analisi econometrica, se necessaria)
+15. **Symbolic Math Toolbox** (per il calcolo simbolico)
+16. **Optimization Toolbox** (per la risoluzione di problemi di ottimizzazione)
+17. **Global Optimization Toolbox** (per ottimizzazioni su larga scala)
+
+Assicurati di averli installati per evitare errori durante l'esecuzione del codice.
+
+---
+
 ## 🚀 Esecuzione del Progetto
 
-Per avviare l'intera pipeline di analisi, apri MATLAB e lancia il seguente comando:
+Per eseguire il progetto, è necessario MATLAB con i toolbox richiesti. Segui questi passaggi:
+
+### **1️⃣ Installazione di MATLAB**
+- Se non hai MATLAB installato, scaricalo dal sito ufficiale di **[MathWorks](https://www.mathworks.com/downloads.html)**.
+- Segui le istruzioni per l'installazione e attiva la licenza.
+
+### **2️⃣ Verifica della presenza dei toolbox necessari**
+Il progetto richiede alcuni toolbox specifici. Per verificare se sono installati, esegui il seguente comando nella Command Window di MATLAB:
+
+```matlab
+ver
+```
+
+Se un toolbox richiesto manca, installalo aprendo **MATLAB Add-On Explorer** e cercando il nome del toolbox.
+
+### **3️⃣ Clonare o Scaricare il Repository**
+Puoi ottenere il codice in due modi:
+- **Scaricare il repository come file ZIP**:  
+  1. Vai alla pagina GitHub del progetto.
+  2. Clicca su **Code > Download ZIP** e estrai il contenuto.
+  3. Apri MATLAB e naviga nella cartella estratta.
+
+- **Clonare il repository con Git** (consigliato se lavori con versioni aggiornate):  
+  Apri un terminale o il Command Window di MATLAB e usa:
+  
+  ```bash
+  git clone https://github.com/tuo-username/PHMAP_23_Project.git
+  cd PHMAP_23_Project
+  ```
+
+### **4️⃣ Eseguire il progetto**
+Dopo aver aperto MATLAB e impostato la cartella del progetto come directory di lavoro, esegui il file principale:
 
 ```matlab
 all_tasks;
@@ -101,6 +157,17 @@ Lo script `all_tasks.m` eseguirà automaticamente i seguenti passaggi:
    - **Task 3** → `accuracy_task3.m`
    - **Task 4** → `accuracy_task4.m`
    - **Task 5** → `rmse_mae_task5.m`
+
+Se desideri eseguire un task specifico senza avviare l'intero flusso, puoi lanciare direttamente il relativo script. Ad esempio, in relazione al task 3:
+```matlab
+task3;
+```
+
+Per rieseguire solo il calcolo delle metriche di un task:
+
+```matlab
+accuracy_task3;
+```
 
 ---
 
@@ -128,60 +195,12 @@ Questi script possono essere lanciati singolarmente per ottenere i risultati rel
 
 ---
 
-## 🔧 Requisiti di Sistema
-Per eseguire correttamente il progetto, è necessario avere MATLAB e i seguenti toolbox installati:
-
-1. **MATLAB R2023a** o successivo (ambiente di sviluppo)
-2. **MATLAB Test** (per test e validazione)
-3. **Parallel Computing Toolbox** (per elaborazioni parallele e accelerazione del calcolo)
-4. **Statistics and Machine Learning Toolbox** (per la classificazione e l'analisi statistica)
-5. **Deep Learning Toolbox** (per modelli basati su reti neurali)
-6. **Curve Fitting Toolbox** (per il fitting dei dati)
-7. **Text Analytics Toolbox** (per l'analisi di testi, se applicabile)
-8. **Predictive Maintenance Toolbox** (per l'analisi predittiva dei guasti)
-9. **Signal Processing Toolbox** (per l'elaborazione di segnali)
-10. **Wavelet Toolbox** (per la trasformata wavelet e analisi di segnali)
-11. **Audio Toolbox** (per l'analisi di segnali audio, se applicabile)
-12. **DSP System Toolbox** (per l'elaborazione digitale dei segnali)
-13. **System Identification Toolbox** (per la modellazione di sistemi dinamici)
-14. **Econometrics Toolbox** (per l'analisi econometrica, se necessaria)
-15. **Symbolic Math Toolbox** (per il calcolo simbolico)
-16. **Optimization Toolbox** (per la risoluzione di problemi di ottimizzazione)
-17. **Global Optimization Toolbox** (per ottimizzazioni su larga scala)
-
-Se necessario, i toolbox possono essere verificati con il comando:
-
-```matlab
-ver
-```
-
-Assicurati di averli installati per evitare errori durante l'esecuzione del codice. Se alcuni toolbox non sono disponibili, contatta l'amministratore del sistema o verifica la licenza MATLAB.
-
----
-
-## 🛠 Personalizzazione e Debug
-
-Se desideri eseguire un task specifico senza avviare l'intero flusso, puoi lanciare direttamente il relativo script. Ad esempio, in relazione al task 3:
-```matlab
-task3;
-```
-
-Per rieseguire solo il calcolo delle metriche di un task:
-
-```matlab
-accuracy_task3;
-```
-
-Se incontri errori o problemi di esecuzione, verifica che tutti i file necessari siano presenti e che MATLAB abbia accesso ai dataset.
-
----
 
 ## 📎 Risorse e Riferimenti
 
 Per ulteriori informazioni sulla competizione PHMAP 2023, visita il sito ufficiale:
 
 🔗 [PHMAP Asia Pacific 2023 - Program Data](https://phmap.jp/program-data/)
-
 
 ---
 
