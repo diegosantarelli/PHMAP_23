@@ -38,21 +38,37 @@ Il repository è organizzato come segue:
  ┃ ┣ 📜 all_tasks.m        # Script principale che esegue l'intera pipeline
  ┃ ┣ 📜 import_data.m      # Script per l'importazione dei dati
  ┃ ┣ 📜 test_set.m         # Definizione del test set
- ┣ 📂 task1/
- ┃ ┃ ┣ 📂 results/             # Task 1: Rilevamento guasti
+ ┣ 📂 task1/               # Task 1: Rilevamento guasti
+ ┃ ┃ ┣ 📂 results/         
  ┣ 📂 task2/               # Task 2: Classificazione guasti
  ┃ ┣ 📂 1st classifier/
- ┃ ┃ ┣ 📂 results/         # Risultati del primo classificatore
+ ┃ ┃ ┣ 📂 results/         
  ┃ ┃ ┣ 📜 task2_1st.m      # Script per il primo classificatore
  ┃ ┣ 📂 2nd classifier/
- ┃ ┃ ┣ 📂 results/         # Risultati del secondo classificatore
+ ┃ ┃ ┣ 📂 results/         
  ┃ ┃ ┣ 📜 task2_2nd.m      # Script per il secondo classificatore
- ┣ 📂 task3/
- ┃ ┃ ┣ 📂 results/              # Task 3: Localizzazione guasto
- ┣ 📂 task4/
- ┃ ┃ ┣ 📂 results/             # Task 4: Identificazione della valvola guasta
- ┣ 📂 task5/
- ┃ ┃ ┣ 📂 results/            # Task 5: Stima della percentuale di apertura
+ ┣ 📂 task3/               # Task 3: Localizzazione guasto
+ ┃ ┣ 📂 results/
+ ┃ ┃ ┣ 📜 all_models_second_try.mat   # Modelli testati nella seconda iterazione
+ ┃ ┃ ┣ 📜 SubspaceKNN.mat             # Modello finale basato su Subspace KNN
+ ┃ ┃ ┣ 📜 accuracy_task3.m            # Script per calcolare l'accuratezza del modello
+ ┃ ┃ ┣ 📜 feature_gen_t3.m            # Script di generazione delle feature
+ ┃ ┃ ┣ 📜 feature_gen_t3.mat          # Feature generate salvate in formato .mat
+ ┃ ┣ 📜 task3.m                       # Script principale per l'esecuzione del Task 3
+ ┣ 📂 task4/                   # Task 4: Identificazione della valvola guasta
+ ┃ ┣ 📂 results/            
+ ┃ ┃ ┣ 📜 baggedTrees_t4.mat   # Modello finale basato su Bagged Trees
+ ┃ ┃ ┣ 📜 accuracy_task4.m     # Script per calcolare l'accuratezza del modello
+ ┃ ┃ ┣ 📜 prova_t4.m           # Script di test aggiuntivo
+ ┃ ┃ ┣ 📜 prova_t4.mat         # Risultati salvati in formato .mat
+ ┃ ┣ 📜 task4.m                # Script principale per l'esecuzione del Task 4
+ ┣ 📂 task5/                   # Task 5: Stima della percentuale di apertura
+ ┃ ┣ 📂 results/
+ ┃ ┃ ┣ 📜 baggedTrees_t5.mat   # Modello finale basato su Bagged Trees
+ ┃ ┃ ┣ 📜 feature_gen_t5.m     # Script di generazione delle feature
+ ┃ ┃ ┣ 📜 feature_gen_t5.mat   # Feature generate salvate in formato .mat
+ ┃ ┃ ┣ 📜 rmse_mae_task5.m     # Script per calcolare RMSE e MAE del modello
+ ┃ ┣ 📜 task5.m                # Script principale per l'esecuzione del Task 5
  ┗ 📜 PHMAP_23.prj         # File di progetto MATLAB
 ```
 
@@ -115,7 +131,7 @@ Questi script possono essere lanciati singolarmente per ottenere i risultati rel
 ## 🔧 Requisiti di Sistema
 Per eseguire correttamente il progetto, è necessario avere MATLAB e i seguenti toolbox installati:
 
-1. **MATLAB R2023a**o successivo (ambiente di sviluppo)
+1. **MATLAB R2023a** o successivo (ambiente di sviluppo)
 2. **MATLAB Test** (per test e validazione)
 3. **Parallel Computing Toolbox** (per elaborazioni parallele e accelerazione del calcolo)
 4. **Statistics and Machine Learning Toolbox** (per la classificazione e l'analisi statistica)
