@@ -101,21 +101,23 @@ Per eseguire correttamente il progetto, è necessario avere installato:
   - **Deep Learning Toolbox** (se applicabile)
 
 Per verificare la presenza dei toolbox, puoi usare il comando:
-
+```matlab
 ver
-
+```
 ---
 
 ## 🛠 Personalizzazione e Debug
 
 Se desideri eseguire un task specifico senza avviare l'intero flusso, puoi lanciare direttamente il relativo script:
-
+```matlab
 task3;
+```
 
 Per rieseguire solo il calcolo delle metriche di un task:
 
+```matlab
 accuracy_task3;
-
+```
 
 Se incontri errori o problemi di esecuzione, verifica che tutti i file necessari siano presenti e che MATLAB abbia accesso ai dataset.
 
