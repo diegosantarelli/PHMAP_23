@@ -208,3 +208,10 @@ Per ulteriori informazioni sulla competizione PHMAP 2023, visita il sito ufficia
 - Diego Santarelli (Matricola: 1118746)
 - Simone Recinelli (Matricola: 1118757)
 - Andrea Marini (Matricola: 1118778)
+
+---
+
+## 📌 Licenza
+
+Questo progetto è distribuito sotto la licenza MIT. Puoi utilizzarlo, modificarlo e ridistribuirlo liberamente, a condizione di includere il testo della licenza originale.  
+
