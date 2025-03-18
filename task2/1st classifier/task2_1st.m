@@ -12,7 +12,7 @@ numRows = height(test_set_task2);
 test_set_task2.Name = (startIndex:(startIndex+numRows-1))'; % Assegna direttamente i numeri
 
 % Filtriamo solo i Case in cui Task1 == 1
-filteredCaseNames = final_predictions.Case(final_predictions.Task1 == 1);
+filteredCaseNames = final_predictions_t1.Case(final_predictions_t1.Task1 == 1);
 test_set_task2 = test_set_task2(ismember(test_set_task2.Name, filteredCaseNames), :);
 
 %% **Caricamento o addestramento del modello**

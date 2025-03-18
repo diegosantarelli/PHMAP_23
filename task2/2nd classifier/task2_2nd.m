@@ -71,6 +71,9 @@ results_task1 = readtable('results.csv');
 % Inizializza la colonna Task2 con 0 per default
 results_task1.Task2 = zeros(height(results_task1), 1);
 
+results_task1.Case = string(results_task1.Case);
+results_t2_1st.Case = string(results_t2_1st.Case);
+
 % 1. Imposta Task2 = 1 per i Case con Unknown anomaly (CaseLabel == 1)
 idx_unknown = ismember(results_task1.Case, results_t2_1st.Case(results_t2_1st.CaseLabel == 1));
 results_task1.Task2(idx_unknown) = 1;
