@@ -37,7 +37,7 @@ for i = 1:length(train_files)
     % Trova la condizione associata nella tabella delle label
     condition = train_labels.Condition{i};
     
-    % Etichettatura per Task 1
+    %% Etichettatura per Task 1
     if strcmp(condition, 'Normal')
         task1_label = 0; % Situazione normale
     elseif strcmp(condition, 'Fault') || strcmp(condition, 'Anomaly')
@@ -46,25 +46,24 @@ for i = 1:length(train_files)
         error(['Condizione sconosciuta per il caso: ', case_id]);
     end
     
-    % Etichettatura per Task 2
+    %% Etichettatura per Task 2
+    if strcmp(condition, 'Fault')
+        task2_label = 3; % Solenoid Valve Fault
+    elseif strcmp(condition, 'Anomaly')
+        task2_label = 2; % Bubble Contamination
+    else
+        task2_label = 0; % Normal
+    end
+
+    
+    %% Etichettatura per Task 3
     % Condizioni basate sui valori di SV e BP
     sv_cols = {'SV1', 'SV2', 'SV3', 'SV4'};
     bp_cols = {'BV1', 'BP1', 'BP2', 'BP3', 'BP4', 'BP5', 'BP6', 'BP7'};
     
     sv_values = train_labels{i, sv_cols}; % Valori di SV
     bp_values = train_labels{i, bp_cols}; % Valori di BP
-    
-    if all(sv_values == 100) && all(bp_values == 0)
-        task2_label = 0; % Normal
-    elseif any(sv_values ~= 100) && all(bp_values == 0)
-        task2_label = 3; % Solenoid Valve Fault
-    elseif all(sv_values == 100) && any(bp_values ~= 0)
-        task2_label = 2; % Bubble Contamination
-    else
-        task2_label = 1; % Unknown Fault
-    end
-    
-    % Etichettatura per Task 3
+
     if task2_label == 2 % Solo per Bubble Anomalies
         % Trova la posizione della bolla
         if train_labels.BV1(i) == 1 && all(train_labels{i, bp_cols} == 0)

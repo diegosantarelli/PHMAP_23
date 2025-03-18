@@ -1,16 +1,20 @@
-% Caricamento del file CSV con risposte corrette
+% Caricamento del file CSV con le risposte corrette
 data = readtable('dataset/test/answer.csv', 'VariableNamingRule', 'preserve');
 
-data.Name = strcat('Case', string(data.ID)); % Converti l'ID in "CaseXXX"
-test_set_labeled_t1 = data(:, {'Name', 'task1'});
+% Se 'ID' è già numerico, lo usiamo direttamente
+test_set_labeled_t1 = data(:, {'ID', 'task1'});
 
+% Rinomina le colonne per uniformità con final_predictions
 test_set_labeled_t1.Properties.VariableNames = {'Case', 'CaseLabel'};
 
-% Unione delle tabelle per confronto
-merged_table = innerjoin(results_table, test_set_labeled_t1, 'Keys', 'Case');
+% Unione delle tabelle basata sul numero del Case
+merged_table = innerjoin(final_predictions, test_set_labeled_t1, 'Keys', 'Case');
 
-% Calcolo accuratezza
+% Confronto tra le predizioni e le etichette reali
 correct_predictions = merged_table.Task1 == merged_table.CaseLabel;
+
+% Calcolo dell'accuracy
 accuracy = sum(correct_predictions) / height(merged_table);
 
-disp(['Accuratezza del primo task: ', num2str(accuracy * 100), '%']);
+% Mostra il risultato
+disp(['Accuratezza del primo task: ', num2str(accuracy * 100, '%.2f'), '%']);

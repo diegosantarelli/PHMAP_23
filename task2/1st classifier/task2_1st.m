@@ -1,5 +1,58 @@
 % Seleziona solo i dati di training con Task2 == 2 o Task2 == 3
 training_set_task2 = labeledData(labeledData.Task2 == 2 | labeledData.Task2 == 3, {'Case', 'Task2'});
+
+%% 📌 1. Separare le classi
+data_class_2 = training_set_task2(training_set_task2.Task2 == 2, :);
+data_class_3 = training_set_task2(training_set_task2.Task2 == 3, :);
+
+%% 📌 2. Estrarre i dati numerici dalle sottotabelle in 'Case'
+num_samples = height(data_class_2); 
+extracted_features = cell(num_samples, 1);
+
+for i = 1:num_samples
+    extracted_features{i} = table2array(data_class_2.Case{i}); % Converte la sottotabella in array numerico
+end
+
+% Convertire la cell array in una matrice numerica utilizzabile
+features_class_2 = cell2mat(extracted_features);
+
+%% 📌 3. Applicare SMOTE per generare nuovi campioni sintetici
+num_samples_needed = height(data_class_3) - height(data_class_2); % Bilanciare il numero di campioni
+
+synthetic_samples = smote_custom(features_class_2, num_samples_needed, 5); % 5 vicini
+
+%% 📌 4. Creare una sottotabella per 'Case' nei nuovi dati sintetici
+% Convertiamo la matrice in una tabella con le stesse colonne di 'Case' originale
+synthetic_case_table = array2table(synthetic_samples, ...
+    'VariableNames', data_class_2.Case{1}.Properties.VariableNames);
+
+% Creiamo una nuova tabella con una colonna 'Case' contenente la sottotabella
+synthetic_data = table(cell(height(synthetic_case_table), 1), ...
+    repmat(2, height(synthetic_case_table), 1), ...
+    'VariableNames', {'Case', 'Task2'});
+
+% Inseriamo la sottotabella in 'Case'
+for i = 1:height(synthetic_data)
+    synthetic_data.Case{i} = synthetic_case_table(i, :);
+end
+
+%% 📌 5. Ora possiamo concatenare senza errori
+balanced_training_set = [training_set_task2; synthetic_data];
+training_set_task2 = balanced_training_set;
+
+%% 📌 6. Verificare la nuova distribuzione delle classi
+class_counts_balanced = groupcounts(training_set_task2, 'Task2');
+disp("Distribuzione delle classi dopo SMOTE:");
+disp(class_counts_balanced);
+
+%% 📌 7. Visualizzare un istogramma della distribuzione
+figure;
+bar(class_counts_balanced.Task2, class_counts_balanced.GroupCount);
+xlabel('Classi');
+ylabel('Numero di Campioni');
+title('Distribuzione delle Classi dopo Bilanciamento con SMOTE');
+grid on;
+
 training_set_task2.Task2(:) = 4; % Uniformiamo l'etichetta
 
 % Crea il test set
@@ -27,7 +80,7 @@ else
     % Se il modello NON esiste, esegui la grid search e addestralo
     k = 5;
     [bestModel, bestParams, bestFalsiPositivi, featureTable_t2_1st, featureTable_test_t2] = one_class_classifier_gridsearch(training_set_task2, test_set_task2, k);
-    
+
     % Salva il modello appena addestrato
     save(model_filename, 'bestModel', 'bestParams');
     disp('Modello salvato con successo dopo il training.');

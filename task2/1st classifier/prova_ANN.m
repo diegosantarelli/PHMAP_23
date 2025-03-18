@@ -19,8 +19,8 @@ filteredCaseNames = results_table.Case(results_table.Task1 == 1);
 test_set_task2 = test_set_task2(ismember(test_set_task2.Name, filteredCaseNames), :);
 
 %% 2. Generazione delle feature per il clustering
-[featureTable_t2_1st, ~] = feature_gen_t2_1st(training_set_task2); 
-[featureTable_test_t2, ~] = feature_gen_t2_1st(test_set_task2);
+[featureTable_t2_1st, ~] = prova(training_set_task2); 
+[featureTable_test_t2, ~] = prova(test_set_task2);
 
 % Controllo se le tabelle sono vuote
 if isempty(featureTable_t2_1st) || isempty(featureTable_test_t2)
