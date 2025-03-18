@@ -137,7 +137,7 @@ featureTable_test = cell2table(feature_rows, 'VariableNames', column_names);
 assignin('base', 'featureTable_test', featureTable_test);
 
 % Visualizza la tabella delle feature
-disp(featureTable_test);
+%disp(featureTable_test);
 
 %%
 % Carica i dati
@@ -169,11 +169,11 @@ selected_features = features(:, [selected_feature_names, "Task1"]); % Mantiene a
 assignin('base', 'selected_features_anova', selected_features);
 
 % Visualizza le feature selezionate
-disp('Feature selezionate con ANOVA:');
-disp(selected_feature_names);
+%disp('Feature selezionate con ANOVA:');
+%disp(selected_feature_names);
 
 % Mostra la nuova tabella ridotta
-disp(selected_features);
+%disp(selected_features);
 
 %% TEST SET
 % --- 1. Estrazione delle Feature sul Test Set ---
@@ -294,46 +294,46 @@ featureTable_testset = cell2table(feature_rows_test, 'VariableNames', column_nam
 % --- 2. Selezione delle Top 22 Feature (dai risultati di ANOVA) ---
 
 % Seleziona solo le feature che erano nelle prime 22 nel training set
-selected_features_testset = featureTable_testset(:, ["Case", "Window_ID", selected_feature_names]);
+selected_features_testset_t1 = featureTable_testset(:, ["Case", "Window_ID", selected_feature_names]);
 
 % Salva e aggiorna il workspace
-assignin('base', 'selected_features_testset', selected_features_testset);
+assignin('base', 'selected_features_testset', selected_features_testset_t1);
 
 % Verifica la struttura della tabella
-summary(selected_features_testset)
+%summary(selected_features_testset_t1)
 
 %% Predizioni
 
 load('task1/results/coarse_tree_final.mat', 'coarse_tree');
 
 % Rimuove 'Case' e 'Window_ID' per la predizione
-test_features = selected_features_testset(:, 3:end); % Mantiene solo le feature
+test_features = selected_features_testset_t1(:, 3:end); % Mantiene solo le feature
 
 % Esegue le predizioni
 predicted_labels = coarse_tree.predictFcn(test_features);
 
 % Aggiunge le predizioni alla tabella
-selected_features_testset.PredictedTask1 = predicted_labels;
+selected_features_testset_t1.PredictedTask1 = predicted_labels;
 
 % Raggruppa per Case e applica majority voting
-unique_cases = unique(selected_features_testset.Case);
-final_predictions = table(unique_cases, zeros(size(unique_cases)), 'VariableNames', {'Case', 'Task1'});
+unique_cases = unique(selected_features_testset_t1.Case);
+final_predictions_t1 = table(unique_cases, zeros(size(unique_cases)), 'VariableNames', {'Case', 'Task1'});
 
 for i = 1:length(unique_cases)
     case_id = unique_cases(i);
     
     % Seleziona tutte le predizioni per lo stesso Case
-    case_predictions = selected_features_testset.PredictedTask1(selected_features_testset.Case == case_id);
+    case_predictions = selected_features_testset_t1.PredictedTask1(selected_features_testset.Case == case_id);
     
     % Majority voting: trova l'etichetta più frequente
     final_label = mode(case_predictions);
     
     % Converte l'etichetta in 1 (anomaly) e 0 (normal)
-    final_predictions.Task1(i) = double(final_label ~= 0); % Se diverso da 0, allora è anomaly (1)
+    final_predictions_t1.Task1(i) = double(final_label ~= 0); % Se diverso da 0, allora è anomaly (1)
 end
 
 % Visualizza la tabella finale
-disp(final_predictions);
+%disp(final_predictions);
 
 % Salva il CSV
-writetable(final_predictions, 'results.csv');
+writetable(final_predictions_t1, 'results.csv');
