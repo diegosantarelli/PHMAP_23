@@ -5,7 +5,7 @@ disp('Dati importati correttamente.');
 
 %% Esecuzione dei task cascata
 disp('Avvio Task1...');
-task1_completed;
+task1_final;
 disp('Task1 completato! Ora avvio Task2_1st.');
 
 disp('Avvio Task2_1st...');

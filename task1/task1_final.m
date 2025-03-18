@@ -137,7 +137,7 @@ featureTable_test = cell2table(feature_rows, 'VariableNames', column_names);
 assignin('base', 'featureTable_test', featureTable_test);
 
 % Visualizza la tabella delle feature
-disp(featureTable_test);
+%disp(featureTable_test);
 
 %%
 % Carica i dati
@@ -169,11 +169,11 @@ selected_features = features(:, [selected_feature_names, "Task1"]); % Mantiene a
 assignin('base', 'selected_features_anova', selected_features);
 
 % Visualizza le feature selezionate
-disp('Feature selezionate con ANOVA:');
-disp(selected_feature_names);
+%disp('Feature selezionate con ANOVA:');
+%disp(selected_feature_names);
 
 % Mostra la nuova tabella ridotta
-disp(selected_features);
+%disp(selected_features);
 
 %% TEST SET
 % --- 1. Estrazione delle Feature sul Test Set ---
@@ -294,181 +294,46 @@ featureTable_testset = cell2table(feature_rows_test, 'VariableNames', column_nam
 % --- 2. Selezione delle Top 22 Feature (dai risultati di ANOVA) ---
 
 % Seleziona solo le feature che erano nelle prime 22 nel training set
-selected_features_testset = featureTable_testset(:, ["Case", "Window_ID", selected_feature_names]);
+selected_features_testset_t1 = featureTable_testset(:, ["Case", "Window_ID", selected_feature_names]);
 
 % Salva e aggiorna il workspace
-assignin('base', 'selected_features_testset', selected_features_testset);
+assignin('base', 'selected_features_testset', selected_features_testset_t1);
 
 % Verifica la struttura della tabella
-summary(selected_features_testset)
+%summary(selected_features_testset_t1)
 
 %% Predizioni
 
 load('task1/results/coarse_tree_final.mat', 'coarse_tree');
 
 % Rimuove 'Case' e 'Window_ID' per la predizione
-test_features = selected_features_testset(:, 3:end); % Mantiene solo le feature
+test_features = selected_features_testset_t1(:, 3:end); % Mantiene solo le feature
 
 % Esegue le predizioni
 predicted_labels = coarse_tree.predictFcn(test_features);
 
 % Aggiunge le predizioni alla tabella
-selected_features_testset.PredictedTask1 = predicted_labels;
+selected_features_testset_t1.PredictedTask1 = predicted_labels;
 
 % Raggruppa per Case e applica majority voting
-unique_cases = unique(selected_features_testset.Case);
-final_predictions = table(unique_cases, zeros(size(unique_cases)), 'VariableNames', {'Case', 'Task1'});
+unique_cases = unique(selected_features_testset_t1.Case);
+final_predictions_t1 = table(unique_cases, zeros(size(unique_cases)), 'VariableNames', {'Case', 'Task1'});
 
 for i = 1:length(unique_cases)
     case_id = unique_cases(i);
     
     % Seleziona tutte le predizioni per lo stesso Case
-    case_predictions = selected_features_testset.PredictedTask1(selected_features_testset.Case == case_id);
+    case_predictions = selected_features_testset_t1.PredictedTask1(selected_features_testset.Case == case_id);
     
     % Majority voting: trova l'etichetta più frequente
     final_label = mode(case_predictions);
     
     % Converte l'etichetta in 1 (anomaly) e 0 (normal)
-    final_predictions.Task1(i) = double(final_label ~= 0); % Se diverso da 0, allora è anomaly (1)
+    final_predictions_t1.Task1(i) = double(final_label ~= 0); % Se diverso da 0, allora è anomaly (1)
 end
 
 % Visualizza la tabella finale
-disp(final_predictions);
+%disp(final_predictions);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-% % Imposta la durata della finestra in secondi
-% window_size = 0.400;
-% 
-% % Inizializza la tabella delle feature
-% featureTable_test = table();
-% 
-% % Definisce la dimensione della finestra mobile (numero di campioni)
-% moving_window_size = 3; % Adatta in base alla frequenza di campionamento
-% 
-% % Itera su ogni caso in combinedTable
-% for i = 1:height(combinedTable)
-%     % Estrai la sottotabella del caso attuale
-%     case_data = combinedTable.Case{i};  
-% 
-%     % Usa l'indice come identificativo del Case
-%     case_id = i;
-% 
-%     % Recupera l'etichetta Task1 del caso
-%     case_label = combinedTable.Task1(i);
-% 
-%     % Estrai il tempo
-%     time = case_data.TIME; 
-% 
-%     % Ottieni i nomi delle colonne dei segnali (tutti eccetto TIME)
-%     signal_columns = case_data.Properties.VariableNames(2:end);
-% 
-%     % Calcolo corretto della durata totale
-%     total_duration = max(time) - min(time);
-% 
-%     % Calcola il numero di finestre
-%     num_windows = max(1, floor(total_duration / window_size));
-% 
-%     % DEBUG: Stampiamo il numero di finestre per ogni caso
-%     disp(['Case ', num2str(i), ': Total Duration = ', num2str(total_duration), ...
-%           's, Num Windows = ', num2str(num_windows)]);
-% 
-%     % Inizializza il contatore delle finestre per questo Case
-%     window_id = 0;
-% 
-%     % Itera su ogni finestra
-%     for w = 1:num_windows
-%         % Calcola i limiti della finestra
-%         start_time = min(time) + (w-1) * window_size;
-%         end_time = start_time + window_size;
-% 
-%         % Seleziona i dati nella finestra
-%         idx = (time >= start_time) & (time < end_time);
-% 
-%         % Debug: Stampa info sulle finestre
-%         disp(['Case ', num2str(i), ', Window ', num2str(w), ...
-%               ': Start Time = ', num2str(start_time), ...
-%               ', End Time = ', num2str(end_time), ...
-%               ', Data Points = ', num2str(sum(idx))]);
-% 
-%         % Se la finestra è vuota o contiene meno di 2 elementi, la salta
-%         if sum(idx) < 2
-%             continue;
-%         end
-% 
-%         % Incrementa il numero della finestra
-%         window_id = window_id + 1;
-% 
-%         % Itera su ogni colonna di segnale (P1, P2, ..., Pn)
-%         for col = 1:length(signal_columns)
-%             signal_name = {signal_columns{col}}; % Converte in cella di caratteri
-%             window_signal = case_data.(signal_columns{col})(idx); % Estrai i dati della finestra
-% 
-%             % --- FEATURE TEMPORALI ---
-%             mean_val = mean(window_signal, 'omitnan');
-%             var_val = var(window_signal, 'omitnan');
-%             min_val = min(window_signal, [], 'omitnan');
-%             max_val = max(window_signal, [], 'omitnan');
-%             median_val = median(window_signal, 'omitnan');
-%             percentile_90 = prctile(window_signal, 90);
-% 
-%             % --- MEDIA MOBILE & DEVIAZIONE STANDARD MOBILE ---
-%             mov_mean = movmean(window_signal, moving_window_size, 'omitnan');
-%             mov_std = movstd(window_signal, moving_window_size, 'omitnan');
-% 
-%             % Media e deviazione standard della media mobile su tutta la finestra
-%             mean_mov_mean = mean(mov_mean, 'omitnan');
-%             mean_mov_std = mean(mov_std, 'omitnan');
-% 
-%             % --- FEATURE FREQUENZIALI ---
-%             % Frequenza di campionamento stimata
-%             Fs = 1 / mean(diff(time(idx))); 
-% 
-%             % Evita errori in caso di Fs non valido
-%             if isinf(Fs) || isnan(Fs) || Fs <= 0
-%                 Fs = 1; % Assegna un valore di default
-%             end
-% 
-%             % Calcola lo spettro di potenza con pwelch
-%             [pxx, f] = pwelch(window_signal, [], [], [], Fs); 
-% 
-%             % Peak Value & Peak Frequency
-%             [peak_value, peak_idx] = max(pxx);
-%             peak_freq = f(peak_idx);
-% 
-%             % Sum Power Spectrum & Std Power Spectrum
-%             sum_power_spectrum = sum(pxx);
-%             std_power_spectrum = std(pxx);
-% 
-%             % Aggiungi i risultati alla tabella con l'etichetta Task1
-%             new_row = table(...
-%                 case_id, window_id, signal_name, mean_val, var_val, min_val, max_val, median_val, percentile_90, ...
-%                 mean_mov_mean, mean_mov_std, ...
-%                 peak_value, peak_freq, sum_power_spectrum, std_power_spectrum, case_label, ...
-%                 'VariableNames', {'Case', 'Window_ID', 'Signal', 'Mean', 'Variance', 'Min', 'Max', 'Median', ...
-%                 '90th_Percentile', 'MeanMovMean', 'MeanMovStd', ...
-%                 'PeakValue', 'PeakFreq', 'SumPowerSpectrum', 'StdPowerSpectrum', 'Label'});
-% 
-%             featureTable_test = [featureTable_test; new_row]; % Concatenazione della nuova riga
-%         end
-%     end
-% end
-% 
-% % Salva la tabella nel workspace
-% assignin('base', 'featureTable_test', featureTable_test);
-% 
-% % Visualizza la tabella delle feature
-% disp(featureTable_test);
+% Salva il CSV
+writetable(final_predictions_t1, 'results.csv');

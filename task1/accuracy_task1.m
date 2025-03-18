@@ -8,7 +8,7 @@ test_set_labeled_t1 = data(:, {'ID', 'task1'});
 test_set_labeled_t1.Properties.VariableNames = {'Case', 'CaseLabel'};
 
 % Unione delle tabelle basata sul numero del Case
-merged_table = innerjoin(final_predictions, test_set_labeled_t1, 'Keys', 'Case');
+merged_table = innerjoin(final_predictions_t1, test_set_labeled_t1, 'Keys', 'Case');
 
 % Confronto tra le predizioni e le etichette reali
 correct_predictions = merged_table.Task1 == merged_table.CaseLabel;
