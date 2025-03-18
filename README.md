@@ -1,4 +1,4 @@
-# PHMAP_23 MATLAB Project
+# 🛰️ PHMAP_23 MATLAB Project
 
 Questo progetto è stato sviluppato per la challenge **PHMAP Asia Pacific 2023** e concerne lo sviluppo di un modulo di diagnosi di guasti nei sistemi di propulsione.
 
@@ -15,8 +15,6 @@ Il codice è organizzato in una pipeline sequenziale che elabora i dati passo do
 
 Il progetto è stato realizzato dagli studenti del **corso di Manutenzione Preventiva per la Robotica e l'Automazione Intelligente** dell’**Università Politecnica delle Marche** (Laurea Magistrale in Ingegneria Informatica e dell'Automazione, secondo anno), sotto la supervisione del **Prof. Alessandro Freddi**.
 
-
-
 ---
 
 ## 📂 Struttura del Progetto
@@ -25,13 +23,23 @@ Il repository è organizzato come segue:
 
 ```
 📦 PHMAP_23_Project
- ┣ 📂 dataset/             # Contiene i dati di input
+ ┣ 📂 dataset/             # Contiene i dati di input necessari per il training e il test
+ ┃ ┣ 📂 test/               # Contiene i dati relativi ai Case di test
+ ┃ ┃ ┣ 📂 data/            # Contiene i dati grezzi dei Case di test (numerati da 178 a 223)
+ ┃ ┃ ┣ 📜 answer.csv       # File con le etichette corrette per il test set (ground truth)
+ ┃ ┃ ┣ 📜 label_spacecraft.xlsx # File Excel con informazioni aggiuntive sulle etichette del test set
+ ┃ ┣ 📂 train/             # Contiene i dati relativi ai Case di training
+ ┃ ┃ ┣ 📂 data/            # Contiene i dati grezzi dei Case di training
+ ┃ ┃ ┣ 📜 label.xlsx       # File Excel con le etichette dei dati di training
+ ┃ ┣ 📜 readme.pdf         # Documento con informazioni dettagliate sul dataset
+ ┃ ┣ 📜 submission.csv     # File per la sottomissione dei risultati del modello
  ┣ 📂 resources/           # File di supporto
  ┣ 📂 scripts/             # Script principali e di supporto
  ┃ ┣ 📜 all_tasks.m        # Script principale che esegue l'intera pipeline
  ┃ ┣ 📜 import_data.m      # Script per l'importazione dei dati
  ┃ ┣ 📜 test_set.m         # Definizione del test set
- ┣ 📂 task1/               # Task 1: Rilevamento guasti
+ ┣ 📂 task1/
+ ┃ ┃ ┣ 📂 results/             # Task 1: Rilevamento guasti
  ┣ 📂 task2/               # Task 2: Classificazione guasti
  ┃ ┣ 📂 1st classifier/
  ┃ ┃ ┣ 📂 results/         # Risultati del primo classificatore
@@ -39,9 +47,12 @@ Il repository è organizzato come segue:
  ┃ ┣ 📂 2nd classifier/
  ┃ ┃ ┣ 📂 results/         # Risultati del secondo classificatore
  ┃ ┃ ┣ 📜 task2_2nd.m      # Script per il secondo classificatore
- ┣ 📂 task3/               # Task 3: Localizzazione guasto
- ┣ 📂 task4/               # Task 4: Identificazione della valvola guasta
- ┣ 📂 task5/               # Task 5: Stima della percentuale di apertura
+ ┣ 📂 task3/
+ ┃ ┃ ┣ 📂 results/              # Task 3: Localizzazione guasto
+ ┣ 📂 task4/
+ ┃ ┃ ┣ 📂 results/             # Task 4: Identificazione della valvola guasta
+ ┣ 📂 task5/
+ ┃ ┃ ┣ 📂 results/            # Task 5: Stima della percentuale di apertura
  ┗ 📜 PHMAP_23.prj         # File di progetto MATLAB
 ```
 
@@ -79,31 +90,57 @@ Lo script `all_tasks.m` eseguirà automaticamente i seguenti passaggi:
 
 ## 📊 Risultati e Output
 
-Dopo l'esecuzione, i risultati dei task vengono salvati nelle rispettive sottocartelle `results/` di ogni task. Le metriche di valutazione principali sono:
+Le metriche di valutazione principali sono:  
 
-- **Task 1-4**: Accuratezza dei classificatori.
-- **Task 5**: Errori di regressione:
-  - **RMSE (Root Mean Square Error)**: Valore medio quadratico dell'errore.
-  - **MAE (Mean Absolute Error)**: Errore medio assoluto della predizione.
+- **Task 1-4**: Accuratezza dei classificatori.  
+- **Task 5**: Errori di regressione:  
+  - **RMSE (Root Mean Square Error)**: Valore medio quadratico dell'errore.  
+  - **MAE (Mean Absolute Error)**: Errore medio assoluto della predizione.  
 
-I risultati finali sono accessibili direttamente dai file `.mat` e `.m` nelle cartelle dei task.
+I risultati finali sono accessibili eseguendo i seguenti script MATLAB, che calcolano e visualizzano le metriche di accuratezza per ciascun task:  
+
+```matlab
+accuracy_task1;
+accuracy_task2_1st;
+accuracy_task2_2nd;
+accuracy_task3;
+accuracy_task4;
+rmse_mae_task5;
+```
+
+Questi script possono essere lanciati singolarmente per ottenere i risultati relativi ai rispettivi task.
 
 ---
 
-## ⚙️ Requisiti di Sistema
+## 🔧 Requisiti di Sistema
+Per eseguire correttamente il progetto, è necessario avere MATLAB e i seguenti toolbox installati:
 
-Per eseguire correttamente il progetto, è necessario avere installato:
+1. **MATLAB R2023a**o successivo (ambiente di sviluppo)
+2. **MATLAB Test** (per test e validazione)
+3. **Parallel Computing Toolbox** (per elaborazioni parallele e accelerazione del calcolo)
+4. **Statistics and Machine Learning Toolbox** (per la classificazione e l'analisi statistica)
+5. **Deep Learning Toolbox** (per modelli basati su reti neurali)
+6. **Curve Fitting Toolbox** (per il fitting dei dati)
+7. **Text Analytics Toolbox** (per l'analisi di testi, se applicabile)
+8. **Predictive Maintenance Toolbox** (per l'analisi predittiva dei guasti)
+9. **Signal Processing Toolbox** (per l'elaborazione di segnali)
+10. **Wavelet Toolbox** (per la trasformata wavelet e analisi di segnali)
+11. **Audio Toolbox** (per l'analisi di segnali audio, se applicabile)
+12. **DSP System Toolbox** (per l'elaborazione digitale dei segnali)
+13. **System Identification Toolbox** (per la modellazione di sistemi dinamici)
+14. **Econometrics Toolbox** (per l'analisi econometrica, se necessaria)
+15. **Symbolic Math Toolbox** (per il calcolo simbolico)
+16. **Optimization Toolbox** (per la risoluzione di problemi di ottimizzazione)
+17. **Global Optimization Toolbox** (per ottimizzazioni su larga scala)
 
-- MATLAB **R2023a** o successivo.
-- Toolbox richiesti:
-  - **Statistics and Machine Learning Toolbox**
-  - **Signal Processing Toolbox**
-  - **Deep Learning Toolbox** (se applicabile)
+Se necessario, i toolbox possono essere verificati con il comando:
 
-Per verificare la presenza dei toolbox, puoi usare il comando:
 ```matlab
 ver
 ```
+
+Assicurati di averli installati per evitare errori durante l'esecuzione del codice. Se alcuni toolbox non sono disponibili, contatta l'amministratore del sistema o verifica la licenza MATLAB.
+
 ---
 
 ## 🛠 Personalizzazione e Debug
@@ -132,7 +169,7 @@ Per ulteriori informazioni sulla competizione PHMAP 2023, visita il sito ufficia
 
 ---
 
-## ✍🏼 Autori
+## ✍🏼 Autori del progetto
 - Diego Santarelli (Matricola: 1118746)
 - Simone Recinelli (Matricola: 1118757)
 - Andrea Marini (Matricola: 1118778)
