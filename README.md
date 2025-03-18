@@ -196,8 +196,10 @@ Questi script possono essere lanciati singolarmente per ottenere i risultati rel
 Il modello complessivo ha raggiunto un'accuratezza globale del **XX%**, considerando l'intero processo di classificazione e regressione.  
 
 ### **Prestazioni per ogni Task:**
-- **Task 1** → **XX%**
-- **Task 2** → **XX%**
+- Task 1 → **93.48%**
+- Task 2 →
+   - Primo classificatore: **100%**
+   - Secondo classificatore: **XX%**
 - **Task 3** → **XX%**
 - **Task 4** → **XX%**
 - **Task 5** →  
@@ -209,7 +211,7 @@ Il modello complessivo ha raggiunto un'accuratezza globale del **XX%**, consider
 
 ## ⚠️ Gestione del Modello Salvato
 
-Quando il codice viene eseguito per la **prima volta**, il modello per il **primo classificatore del Task 2** viene **salvato automaticamente** nella cartella `results/`. Se si vuole eseguire il **primo classificatore del Task 2** (`task2_1st.m`) **nella stessa sessione**, non è necessario eliminare il modello.
+Quando il codice viene eseguito per la **prima volta**, il modello per il **primo classificatore del Task 2** viene **salvato automaticamente** nella cartella `results/`. Se si vuole eseguire il primo classificatore del Task 2 (`task2_1st.m`) **nella stessa sessione**, non è necessario eliminare il modello.
 
 Tuttavia, se MATLAB viene **riavviato** o se si apre MATLAB e si trova il modello già salvato nella cartella `results/` del **primo classificatore del Task 2**, è necessario **eliminarlo manualmente** prima di rieseguire `task2_1st.m`. Questo garantisce che il modello venga ricaricato o riaddestrato correttamente, evitando possibili errori legati a versioni precedenti salvate nella cartella `results/`.
 
@@ -219,8 +221,7 @@ Per eliminare il modello manualmente, eseguire il seguente comando in MATLAB:
 delete('task2/1st classifier/results/best_model_t2_1st.mat');
 ```
 
-Se si desidera eseguire nuovamente l'intero processo dalla prima fase, si consiglia di eliminare anche i risultati salvati nelle altre cartelle dei task prima di rieseguire `all_tasks.m`.
-
+---
 
 ## 📎 Risorse e Riferimenti
 
