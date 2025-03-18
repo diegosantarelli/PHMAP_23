@@ -1,94 +1,40 @@
-% Seleziona solo i dati di training con Task2 == 2 o Task2 == 3
+%% **Preparazione del training set**
 training_set_task2 = labeledData(labeledData.Task2 == 2 | labeledData.Task2 == 3, {'Case', 'Task2'});
-
-%% 📌 1. Separare le classi
-data_class_2 = training_set_task2(training_set_task2.Task2 == 2, :);
-data_class_3 = training_set_task2(training_set_task2.Task2 == 3, :);
-
-%% 📌 2. Estrarre i dati numerici dalle sottotabelle in 'Case'
-num_samples = height(data_class_2); 
-extracted_features = cell(num_samples, 1);
-
-for i = 1:num_samples
-    extracted_features{i} = table2array(data_class_2.Case{i}); % Converte la sottotabella in array numerico
-end
-
-% Convertire la cell array in una matrice numerica utilizzabile
-features_class_2 = cell2mat(extracted_features);
-
-%% 📌 3. Applicare SMOTE per generare nuovi campioni sintetici
-num_samples_needed = height(data_class_3) - height(data_class_2); % Bilanciare il numero di campioni
-
-synthetic_samples = smote_custom(features_class_2, num_samples_needed, 5); % 5 vicini
-
-%% 📌 4. Creare una sottotabella per 'Case' nei nuovi dati sintetici
-% Convertiamo la matrice in una tabella con le stesse colonne di 'Case' originale
-synthetic_case_table = array2table(synthetic_samples, ...
-    'VariableNames', data_class_2.Case{1}.Properties.VariableNames);
-
-% Creiamo una nuova tabella con una colonna 'Case' contenente la sottotabella
-synthetic_data = table(cell(height(synthetic_case_table), 1), ...
-    repmat(2, height(synthetic_case_table), 1), ...
-    'VariableNames', {'Case', 'Task2'});
-
-% Inseriamo la sottotabella in 'Case'
-for i = 1:height(synthetic_data)
-    synthetic_data.Case{i} = synthetic_case_table(i, :);
-end
-
-%% 📌 5. Ora possiamo concatenare senza errori
-balanced_training_set = [training_set_task2; synthetic_data];
-training_set_task2 = balanced_training_set;
-
-%% 📌 6. Verificare la nuova distribuzione delle classi
-class_counts_balanced = groupcounts(training_set_task2, 'Task2');
-disp("Distribuzione delle classi dopo SMOTE:");
-disp(class_counts_balanced);
-
-%% 📌 7. Visualizzare un istogramma della distribuzione
-figure;
-bar(class_counts_balanced.Task2, class_counts_balanced.GroupCount);
-xlabel('Classi');
-ylabel('Numero di Campioni');
-title('Distribuzione delle Classi dopo Bilanciamento con SMOTE');
-grid on;
-
 training_set_task2.Task2(:) = 4; % Uniformiamo l'etichetta
 
-% Crea il test set
+%% **Preparazione del test set**
+% Creazione del test set partendo dai dati grezzi
 test_set_task2 = test_set();
-test_set_task2.Task2 = NaN(height(test_set_task2), 1);
 
-% Aggiungi una colonna 'Name' con il formato "CaseXXX"
+% Aggiunta colonna 'Name' con formato "CaseXXX"
 startIndex = 178;
 numRows = height(test_set_task2);
-nameStrings = arrayfun(@(x) sprintf('Case%d', x), startIndex:(startIndex+numRows-1), 'UniformOutput', false);
-test_set_task2.Name = nameStrings(:);
+test_set_task2.Name = (startIndex:(startIndex+numRows-1))'; % Assegna direttamente i numeri
 
-% Filtra i nomi dei case in results_table dove Task1 == 1
-filteredCaseNames = results_table.Case(results_table.Task1 == 1);
+% Filtriamo solo i Case in cui Task1 == 1
+filteredCaseNames = final_predictions.Case(final_predictions.Task1 == 1);
 test_set_task2 = test_set_task2(ismember(test_set_task2.Name, filteredCaseNames), :);
 
-% Percorso del file salvato
+%% **Caricamento o addestramento del modello**
 model_filename = 'task2/1st classifier/results/best_model_t2_1st.mat';
 
 if isfile(model_filename)
-    % Se il modello esiste, caricalo invece di riaddestrarlo
+    % Se il modello esiste, lo carichiamo invece di riaddestrarlo
     load(model_filename, 'bestModel', 'bestParams');
     disp('Modello caricato con successo!');
 else
-    % Se il modello NON esiste, esegui la grid search e addestralo
+    % Se il modello NON esiste, eseguiamo la grid search e addestriamo il modello
     k = 5;
-    [bestModel, bestParams, bestFalsiPositivi, featureTable_t2_1st, featureTable_test_t2] = one_class_classifier_gridsearch(training_set_task2, test_set_task2, k);
+    [bestModel, bestParams, bestFalsiPositivi, featureTable_t2_1st, featureTable_test_t2, selected_feature_names_t2] = one_class_classifier_gridsearch(training_set_task2, test_set_task2, k);
 
-    % Salva il modello appena addestrato
+    
+    % Salvataggio del modello
     save(model_filename, 'bestModel', 'bestParams');
     disp('Modello salvato con successo dopo il training.');
 end
 
-
-% Mappatura Member -> Case per la tabella delle feature di test
-uniqueMembers = unique(featureTable_test_t2.EnsembleID_);
+%% **Mappatura EnsembleID -> Case per la tabella delle feature di test**
+uniqueMembers = unique(featureTable_test_t2.Case);
 numUniqueMembers = numel(uniqueMembers);
 numFilteredCases = numel(filteredCaseNames);
 
@@ -96,17 +42,46 @@ if numUniqueMembers ~= numFilteredCases
     error('Mismatch tra il numero di members unici e il numero di Case filtrati!');
 end
 
-% Associa i Member ai Case filtrati SEGUENDO L'ORDINE di filteredCaseNames
-memberToCaseMap = containers.Map(uniqueMembers, filteredCaseNames);
-
-% Aggiungi la colonna CaseName a featureTable_test_t2 solo per il voto di maggioranza
-featureTable_test_t2.CaseName = cell(height(featureTable_test_t2), 1);
-for i = 1:height(featureTable_test_t2)
-    featureTable_test_t2.CaseName{i} = memberToCaseMap(featureTable_test_t2.EnsembleID_{i});
+% Convertiamo le chiavi della mappa in `double`
+% Se uniqueMembers è una cell array, convertiamola in un array numerico
+if iscell(uniqueMembers)
+    uniqueMembers = cellfun(@double, uniqueMembers);
 end
 
-% Predizione per i member e calcolo del voto di maggioranza per ogni case
+% Se filteredCaseNames è una cell array, convertiamola in un array numerico
+if iscell(filteredCaseNames)
+    filteredCaseNames = cellfun(@double, filteredCaseNames);
+end
+
+
+% Creazione della mappa tra Members e Case filtrati
+memberToCaseMap = containers.Map(uniqueMembers, filteredCaseNames);
+
+% Assicuriamoci che `featureTable_test_t2.Case` sia numerico prima di usarlo come chiave nella mappa
+featureTable_test_t2.Case = str2double(string(featureTable_test_t2.Case)); % Converte cell array di stringhe in numeri
+
+% Aggiunta della colonna CaseName a featureTable_test_t2 per il voto di maggioranza
+featureTable_test_t2.CaseName = cell(height(featureTable_test_t2), 1);
+
+% Esegui il mapping senza errori
+for i = 1:height(featureTable_test_t2)
+    featureTable_test_t2.CaseName{i} = memberToCaseMap(featureTable_test_t2.Case(i));
+end
+
+% Assicura che featureTable_test_t2.CaseName sia una cell array di stringhe
+if isnumeric(featureTable_test_t2.CaseName)
+    featureTable_test_t2.CaseName = cellstr(string(featureTable_test_t2.CaseName)); 
+elseif iscell(featureTable_test_t2.CaseName)
+    featureTable_test_t2.CaseName = cellfun(@(x) cellstr(string(x)), featureTable_test_t2.CaseName, 'UniformOutput', false);
+end
+
+% Appiattisce eventuali celle nidificate
+featureTable_test_t2.CaseName = cellfun(@char, featureTable_test_t2.CaseName, 'UniformOutput', false);
+
+% Ora possiamo usare unique senza errori
 uniqueCases = unique(featureTable_test_t2.CaseName);
+
+
 finalLabels = zeros(height(uniqueCases), 1);
 
 for i = 1:height(uniqueCases)
@@ -114,9 +89,9 @@ for i = 1:height(uniqueCases)
     caseRows = featureTable_test_t2(strcmp(featureTable_test_t2.CaseName, currentCase), :);
 
     % Seleziona solo le feature numeriche, ESCLUDENDO 'CaseName'
-    featureColumns = setdiff(featureTable_t2_1st.Properties.VariableNames(5:end), {'CaseName'});
+    featureColumns = selected_feature_names_t2; % Usa le feature selezionate precedentemente
     numericData = caseRows(:, featureColumns);
-    numericData = numericData{:,:}; % Estrai come matrice
+    numericData = numericData{:,:}; % Converti in matrice
 
     % Verifica dimensione dei dati e colonne
     disp(['Case: ', currentCase, ' - Dimensione dati: ', mat2str(size(numericData))]);
@@ -124,23 +99,20 @@ for i = 1:height(uniqueCases)
     % Predizione per ciascuna finestra temporale
     [isAnomaly, ~] = isanomaly(bestModel, numericData);
 
-    % Conta le anomalie
+    % Conta le anomalie rilevate
     numAnomalie = sum(isAnomaly);
     disp(['Case ', currentCase, ' - Anomalie rilevate: ', num2str(numAnomalie), ' su ', num2str(height(caseRows))]);
 
-    % Voto di maggioranza
-    if numAnomalie >= 3
+    % Voto di maggioranza per determinare l'etichetta finale
+    if numAnomalie >= 1
         finalLabel = 1; % Unknown anomaly
     else
-        finalLabel = 4; % Known Anomaly
+        finalLabel = 4; % Known anomaly
     end
 
     finalLabels(i) = finalLabel;
 end
 
-% Creiamo la tabella finale con i risultati
+%% **Creazione della tabella finale con i risultati**
 results_t2_1st = table(uniqueCases, finalLabels, 'VariableNames', {'Case', 'CaseLabel'});
 
-% % Verifica finale: controlla che training e test abbiano lo stesso numero di feature
-% disp(['Numero di feature nel training set: ', num2str(size(featureTable_t2_1st, 2) - 2)]); % Escludiamo Case e Task2
-% disp(['Numero di feature nel test set (senza CaseName): ', num2str(size(numericData, 2))]);
