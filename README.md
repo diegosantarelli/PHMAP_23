@@ -29,7 +29,7 @@ Il repository è organizzato come segue:
  ┃ ┃ ┣ 📜 answer.csv       # File con le etichette corrette per il test set (ground truth)
  ┃ ┃ ┣ 📜 label_spacecraft.xlsx # File Excel con informazioni aggiuntive sulle etichette del test set
  ┃ ┣ 📂 train/             # Contiene i dati relativi ai Case di training
- ┃ ┃ ┣ 📂 data/            # Contiene i dati grezzi dei Case di training
+ ┃ ┃ ┣ 📂 data/            # Contiene i dati grezzi dei Case di training (numerati da 1 a 177)
  ┃ ┃ ┣ 📜 label.xlsx       # File Excel con le etichette dei dati di training
  ┃ ┣ 📜 readme.pdf         # Documento con informazioni dettagliate sul dataset
  ┃ ┣ 📜 submission.csv     # File per la sottomissione dei risultati del modello
@@ -161,7 +161,7 @@ Assicurati di averli installati per evitare errori durante l'esecuzione del codi
 
 ## 🛠 Personalizzazione e Debug
 
-Se desideri eseguire un task specifico senza avviare l'intero flusso, puoi lanciare direttamente il relativo script:
+Se desideri eseguire un task specifico senza avviare l'intero flusso, puoi lanciare direttamente il relativo script. Ad esempio, in relazione al task 3:
 ```matlab
 task3;
 ```
