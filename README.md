@@ -193,6 +193,18 @@ rmse_mae_task5;
 
 Questi script possono essere lanciati singolarmente per ottenere i risultati relativi ai rispettivi task.
 
+Il modello complessivo ha raggiunto un'accuratezza globale del **XX%**, considerando l'intero processo di classificazione e regressione.  
+
+### **Prestazioni per ogni Task:**
+- **Task 1** → **XX%**
+- **Task 2** → **XX%**
+- **Task 3** → **XX%**
+- **Task 4** → **XX%**
+- **Task 5** →  
+  - **RMSE:** XX  
+  - **MAE:** XX
+
+
 ---
 
 
