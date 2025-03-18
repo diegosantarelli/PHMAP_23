@@ -1,6 +1,15 @@
 # PHMAP_23 MATLAB Project
 
-Questo progetto è stato sviluppato per la challenge **PHMAP Asia Pacific 2023** e riguarda la diagnosi di guasti nei sistemi di propulsione. L'obiettivo principale è classificare e localizzare guasti nelle valvole del sistema e stimare la percentuale di apertura delle valvole guaste. Il codice è organizzato in una pipeline sequenziale che elabora i dati passo dopo passo.
+Questo progetto è stato sviluppato per la challenge **PHMAP Asia Pacific 2023** e concerne lo sviluppo di un modulo di diagnosi di guasti nei sistemi di propulsione.
+
+Gli obiettivi di questo progetto sono:  
+1. **Rilevare anomalie** nei dati di test, distinguendo tra normali e anomali.  
+2. **Classificare il tipo di guasto** per i dati anomali, identificando se è dovuto a contaminazione da bolle, guasto alla valvola solenoide o guasto sconosciuto.  
+3. **Localizzare la posizione della bolla** nei casi di contaminazione, assegnandola a una delle otto possibili posizioni (BV1, BP1-BP7).  
+4. **Identificare la valvola solenoide guasta** tra le quattro disponibili (SV1-SV4) nei casi di guasto alla valvola.  
+5. **Predire la percentuale di apertura della valvola guasta**, fornendo un valore compreso tra 0% e 100%.
+
+Il codice è organizzato in una pipeline sequenziale che elabora i dati passo dopo passo.
 
 ## 📚 Contesto Accademico
 
@@ -14,7 +23,7 @@ Il progetto è stato realizzato dagli studenti del **corso di Manutenzione Preve
 
 Il repository è organizzato come segue:
 
-
+```
 📦 PHMAP_23_Project
  ┣ 📂 dataset/             # Contiene i dati di input
  ┣ 📂 resources/           # File di supporto
@@ -34,6 +43,7 @@ Il repository è organizzato come segue:
  ┣ 📂 task4/               # Task 4: Identificazione della valvola guasta
  ┣ 📂 task5/               # Task 5: Stima della percentuale di apertura
  ┗ 📜 PHMAP_23.prj         # File di progetto MATLAB
+```
 
 ---
 
@@ -41,9 +51,9 @@ Il repository è organizzato come segue:
 
 Per avviare l'intera pipeline di analisi, apri MATLAB e lancia il seguente comando:
 
-
+```matlab
 all_tasks;
-
+```
 
 Lo script `all_tasks.m` eseguirà automaticamente i seguenti passaggi:
 
