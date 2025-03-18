@@ -1,50 +1,62 @@
 # PHMAP_23 MATLAB Project
 
-Questo progetto implementa una pipeline di analisi per il rilevamento e la classificazione di guasti nei sistemi di propulsione, in linea con la challenge **PHMAP Asia Pacific 2023**. Il codice è strutturato in più task sequenziali che elaborano i dati passo dopo passo.
+Questo progetto è stato sviluppato per la challenge **PHMAP Asia Pacific 2023** e riguarda la diagnosi di guasti nei sistemi di propulsione. L'obiettivo principale è classificare e localizzare guasti nelle valvole del sistema e stimare la percentuale di apertura delle valvole guaste. Il codice è organizzato in una pipeline sequenziale che elabora i dati passo dopo passo.
+
+## 📚 Contesto Accademico
+
+Il progetto è stato realizzato dagli studenti del **corso di Manutenzione Preventiva per la Robotica e l'Automazione Intelligente** dell’**Università Politecnica delle Marche** (Laurea Magistrale in Ingegneria Informatica e dell'Automazione, secondo anno), sotto la supervisione del **Prof. Alessandro Freddi**.
+
+
+
+---
 
 ## 📂 Struttura del Progetto
 
-La cartella del progetto è organizzata nel seguente modo:
+Il repository è organizzato come segue:
 
 
-📦 PHMAP_Project
+📦 PHMAP_23_Project
  ┣ 📂 dataset/             # Contiene i dati di input
- ┣ 📂 resources/           # File aggiuntivi e supporto
+ ┣ 📂 resources/           # File di supporto
  ┣ 📂 scripts/             # Script principali e di supporto
- ┃ ┣ 📜 all_tasks.m        # Script principale che esegue tutti i task
- ┃ ┣ 📜 import_data.m      # Script per importare i dati
+ ┃ ┣ 📜 all_tasks.m        # Script principale che esegue l'intera pipeline
+ ┃ ┣ 📜 import_data.m      # Script per l'importazione dei dati
  ┃ ┣ 📜 test_set.m         # Definizione del test set
- ┣ 📂 task1/
- ┣ 📂 task2/
+ ┣ 📂 task1/               # Task 1: Rilevamento guasti
+ ┣ 📂 task2/               # Task 2: Classificazione guasti
  ┃ ┣ 📂 1st classifier/
  ┃ ┃ ┣ 📂 results/         # Risultati del primo classificatore
  ┃ ┃ ┣ 📜 task2_1st.m      # Script per il primo classificatore
  ┃ ┣ 📂 2nd classifier/
  ┃ ┃ ┣ 📂 results/         # Risultati del secondo classificatore
  ┃ ┃ ┣ 📜 task2_2nd.m      # Script per il secondo classificatore
- ┣ 📂 task3/
- ┣ 📂 task4/
- ┣ 📂 task5/
+ ┣ 📂 task3/               # Task 3: Localizzazione guasto
+ ┣ 📂 task4/               # Task 4: Identificazione della valvola guasta
+ ┣ 📂 task5/               # Task 5: Stima della percentuale di apertura
  ┗ 📜 PHMAP_23.prj         # File di progetto MATLAB
 
+---
 
 ## 🚀 Esecuzione del Progetto
 
-Per eseguire l'intero flusso di lavoro, apri MATLAB e lancia il seguente comando nella Command Window:
+Per avviare l'intera pipeline di analisi, apri MATLAB e lancia il seguente comando:
+
 
 all_tasks;
 
 
-### **Dettaglio delle operazioni eseguite da `all_tasks.m`**
+Lo script `all_tasks.m` eseguirà automaticamente i seguenti passaggi:
+
+### **Dettaglio delle operazioni**
 1. **Importazione dati** → `import_data.m`
-2. **Esecuzione dei task in cascata**:
-   - **Task 1** → `task1.m`
+2. **Esecuzione sequenziale dei task**:
+   - **Task 1** → Rilevamento guasti (`task1.m`)
    - **Task 2**:
      - Primo classificatore → `task2_1st.m`
      - Secondo classificatore → `task2_2nd.m`
-   - **Task 3** → `task3.m`
-   - **Task 4** → `task4.m`
-   - **Task 5** → `task5.m`
+   - **Task 3** → Localizzazione del guasto (`task3.m`)
+   - **Task 4** → Identificazione della valvola guasta (`task4.m`)
+   - **Task 5** → Stima dell'apertura della valvola (`task5.m`)
 3. **Valutazione delle prestazioni**:
    - **Task 1** → `accuracy_task1.m`
    - **Task 2 - 1st Classifier** → `accuracy_task2_1st.m`
@@ -55,36 +67,60 @@ all_tasks;
 
 ---
 
-## 📊 Output del Progetto
+## 📊 Risultati e Output
 
-Dopo l'esecuzione, i risultati dei task vengono salvati nelle rispettive sottocartelle `results/` di ogni task. Questi includono metriche di accuratezza e valutazione delle prestazioni.
+Dopo l'esecuzione, i risultati dei task vengono salvati nelle rispettive sottocartelle `results/` di ogni task. Le metriche di valutazione principali sono:
 
-- **Task 1-4**: Metriche di accuratezza.
-- **Task 5**: Errori di regressione (RMSE, MAE).
+- **Task 1-4**: Accuratezza dei classificatori.
+- **Task 5**: Errori di regressione:
+  - **RMSE (Root Mean Square Error)**: Valore medio quadratico dell'errore.
+  - **MAE (Mean Absolute Error)**: Errore medio assoluto della predizione.
+
+I risultati finali sono accessibili direttamente dai file `.mat` e `.m` nelle cartelle dei task.
+
+---
 
 ## ⚙️ Requisiti di Sistema
 
-Assicurati di avere installato:
+Per eseguire correttamente il progetto, è necessario avere installato:
+
 - MATLAB **R2023a** o successivo.
 - Toolbox richiesti:
   - **Statistics and Machine Learning Toolbox**
   - **Signal Processing Toolbox**
-  - **Deep Learning Toolbox**
+  - **Deep Learning Toolbox** (se applicabile)
 
-## 🛠 Modifiche e Personalizzazioni
+Per verificare la presenza dei toolbox, puoi usare il comando:
 
-Se desideri eseguire un task specifico senza avviare l'intero flusso, puoi lanciare manualmente uno dei seguenti comandi:
-
-```matlab
-task3;
-```
-
-Se vuoi rieseguire il calcolo delle metriche senza ripetere l'elaborazione:
-
-```matlab
-accuracy_task3;
-```
+ver
 
 ---
 
-## 🤝 Contributi e Collaborazione
+## 🛠 Personalizzazione e Debug
+
+Se desideri eseguire un task specifico senza avviare l'intero flusso, puoi lanciare direttamente il relativo script:
+
+task3;
+
+Per rieseguire solo il calcolo delle metriche di un task:
+
+accuracy_task3;
+
+
+Se incontri errori o problemi di esecuzione, verifica che tutti i file necessari siano presenti e che MATLAB abbia accesso ai dataset.
+
+---
+
+## 📎 Risorse e Riferimenti
+
+Per ulteriori informazioni sulla competizione PHMAP 2023, visita il sito ufficiale:
+
+🔗 [PHMAP Asia Pacific 2023 - Program Data](https://phmap.jp/program-data/)
+
+
+---
+
+## ✍🏼 Autori
+- Diego Santarelli (Matricola: 1118746)
+- Simone Recinelli (Matricola: 1118757)
+- Andrea Marini (Matricola: 1118778)
