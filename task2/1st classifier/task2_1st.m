@@ -92,14 +92,14 @@ for i = 1:height(uniqueCases)
     numericData = numericData{:,:}; % Converti in matrice
 
     % Verifica dimensione dei dati e colonne
-    disp(['Case: ', currentCase, ' - Dimensione dati: ', mat2str(size(numericData))]);
+    %disp(['Case: ', currentCase, ' - Dimensione dati: ', mat2str(size(numericData))]);
 
     % Predizione per ciascuna finestra temporale
     [isAnomaly, ~] = isanomaly(bestModel, numericData);
 
     % Conta le anomalie rilevate
     numAnomalie = sum(isAnomaly);
-    disp(['Case ', currentCase, ' - Anomalie rilevate: ', num2str(numAnomalie), ' su ', num2str(height(caseRows))]);
+    %disp(['Case ', currentCase, ' - Anomalie rilevate: ', num2str(numAnomalie), ' su ', num2str(height(caseRows))]);
 
     % Voto di maggioranza per determinare l'etichetta finale
     if numAnomalie >= 1

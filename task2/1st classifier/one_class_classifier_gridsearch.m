@@ -76,7 +76,6 @@ function [bestModel, bestParams, bestFalsiPositivi, featureTable_t2_1st, feature
         % Controllo dimensione delle colonne prima di creare la tabella
         num_actual_columns = size(feature_rows_t2, 2);
         if length(column_names_t2) ~= num_actual_columns
-            warning('Mismatch tra nomi delle colonne e dati, correggo...');
             column_names_t2 = column_names_t2(1:num_actual_columns);
         end
         
@@ -103,10 +102,6 @@ function [bestModel, bestParams, bestFalsiPositivi, featureTable_t2_1st, feature
     
     % Ora selezioniamo le migliori feature
     selected_feature_names_t2 = features_numeric_t2.Properties.VariableNames(sorted_idx(1:num_features_select));
-    
-    % Mostra le feature selezionate per debug
-    disp('Feature selezionate per Task2:');
-    disp(selected_feature_names_t2);
 
     %% **Generazione delle feature per il test set**
     feature_rows_test_t2 = {};
@@ -155,7 +150,6 @@ function [bestModel, bestParams, bestFalsiPositivi, featureTable_t2_1st, feature
     if ~isempty(feature_rows_test_t2)
         num_actual_columns = size(feature_rows_test_t2, 2);
         if length(column_names_t2) ~= num_actual_columns
-            warning('Mismatch tra nomi delle colonne e dati nel test set, correggo...');
             column_names_t2 = column_names_t2(1:num_actual_columns);
         end
 
@@ -194,5 +188,5 @@ function [bestModel, bestParams, bestFalsiPositivi, featureTable_t2_1st, feature
 
     %% **Predizione finale**
     [isAnomaly_test, ~] = isanomaly(bestModel, X_test);
-    disp(['Anomalie rilevate nel test set: ', num2str(sum(isAnomaly_test == 1))]);
+    %disp(['Anomalie rilevate nel test set: ', num2str(sum(isAnomaly_test == 1))]);
 end
