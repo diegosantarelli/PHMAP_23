@@ -5,7 +5,7 @@ training_set_task2_2nd = labeledData(labeledData.Task2 == 2 | labeledData.Task2 
 
 test_set_task2_2nd = results_t2_1st(results_t2_1st.CaseLabel == 4, {'Case', 'CaseLabel'});
 
-test_raw_data = test_set();
+test_raw_data = test_set();   
 
 % Aggiungi una colonna vuota per contenere i dati grezzi (come cell array)
 test_set_task2_2nd.RawData = cell(height(test_set_task2_2nd), 1);
