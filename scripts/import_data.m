@@ -20,6 +20,9 @@ train_files = dir(fullfile(train_folder, '*.csv'));
 % Crea la tabella finale
 labeledData = table();
 
+% Identificatore autoincrementale
+id_counter = 1;
+
 % Etichettatura per i task e creazione delle sottotabelle
 for i = 1:length(train_files)
     % Nome del caso nel file
@@ -55,9 +58,7 @@ for i = 1:length(train_files)
         task2_label = 0; % Normal
     end
 
-    
     %% Etichettatura per Task 3
-    % Condizioni basate sui valori di SV e BP
     sv_cols = {'SV1', 'SV2', 'SV3', 'SV4'};
     bp_cols = {'BV1', 'BP1', 'BP2', 'BP3', 'BP4', 'BP5', 'BP6', 'BP7'};
     
@@ -65,7 +66,6 @@ for i = 1:length(train_files)
     bp_values = train_labels{i, bp_cols}; % Valori di BP
 
     if task2_label == 2 % Solo per Bubble Anomalies
-        % Trova la posizione della bolla
         if train_labels.BV1(i) == 1 && all(train_labels{i, bp_cols} == 0)
             task3_label = 8; % Bolla in BV1
         else
@@ -84,7 +84,6 @@ for i = 1:length(train_files)
     
     % Etichettatura per Task 4
     if task2_label == 3 % Solo per Valve Fault
-        % Trova la posizione del fault nella valvola
         sv_fault = find(sv_values ~= 100); % Valvole con fault
         if ~isempty(sv_fault) && length(sv_fault) == 1 && all(sv_values(setdiff(1:4, sv_fault)) == 100)
             task4_label = sv_fault; % Fault in SV1, SV2, SV3 o SV4
@@ -109,9 +108,13 @@ for i = 1:length(train_files)
     % Crea la sottotabella con i dati del caso corrente
     sub_table = tbl; % Include tutte le colonne, puoi ridurre alle necessarie
     
+    % Assegna un identificativo autoincrementale
+    name_id = id_counter;
+    id_counter = id_counter + 1;
+    
     % Crea una riga della tabella finale
-    new_row = table({sub_table}, task1_label, task2_label, task3_label, task4_label, task5_label, ...
-                    'VariableNames', {'Case', 'Task1', 'Task2', 'Task3', 'Task4', 'Task5'});
+    new_row = table(name_id, {sub_table}, task1_label, task2_label, task3_label, task4_label, task5_label, ...
+                    'VariableNames', {'Name', 'Case', 'Task1', 'Task2', 'Task3', 'Task4', 'Task5'});
     
     % Aggiungi la riga alla tabella finale
     labeledData = [labeledData; new_row];

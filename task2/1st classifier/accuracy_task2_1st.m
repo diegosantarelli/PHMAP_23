@@ -31,7 +31,7 @@ merged_table = innerjoin(results_t2_1st, test_set_labeled_t2, 'Keys', 'Case');
 
 % Controlla se la tabella è vuota
 if isempty(merged_table)
-    error('❌ Errore critico: Nessun match tra predizioni e etichette reali! Verifica i Case.');
+    error('Errore critico: Nessun match tra predizioni e etichette reali! Verifica i Case.');
 end
 
 % =================== CALCOLO ACCURATEZZA ===================
@@ -49,11 +49,11 @@ num_predizioni_corrette = sum(merged_table{:, col_predizioni} == merged_table{:,
 
 % Evitare divisioni per zero se la tabella è vuota
 if height(merged_table) == 0
-    disp('❌ Errore: Nessun dato disponibile per il calcolo dell’accuratezza!');
+    disp('Errore: Nessun dato disponibile per il calcolo dell’accuratezza!');
     accuratezza = NaN;
 else
     accuratezza = num_predizioni_corrette / height(merged_table);
 end
 
 % =================== RISULTATI ===================
-disp(['✅ Accuratezza della one-class classification: ', num2str(accuratezza * 100), '%']);
+disp(['Accuratezza dell Isolation Forest: ', num2str(accuratezza * 100), '%']);

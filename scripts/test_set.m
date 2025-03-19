@@ -21,10 +21,10 @@ function test_set = test_set()
             error('Etichetta non trovata per il caso %d', case_number);
         end
 
-        test_data_table = [test_data_table; {case_number, data, label_row.Spacecraft}];
+        test_data_table = [test_data_table; {case_number, data, label_row.Spacecraft, case_number}];
     end
 
-    test_data_table.Properties.VariableNames = {'prova', 'Case', 'Spacecraft'};
-    test_set = test_data_table(:, {'Case', 'Spacecraft'});
+    test_data_table.Properties.VariableNames = {'prova', 'Case', 'Spacecraft', 'Name'};
+    test_set = test_data_table(:, {'Name', 'Case', 'Spacecraft'});
 
 end
