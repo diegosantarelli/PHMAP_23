@@ -42,33 +42,40 @@ Il repository è organizzato come segue:
  ┣ 📂 task1/               # Task 1: Rilevamento guasti
  ┃ ┃ ┣ 📂 results/
  ┃ ┃ ┣ 📜 coarse_tree_final.mat    # Modello per il Task 1
+ ┃ ┣ 📜 confusion_matrix_t1.m           
  ┃ ┣ 📜 accuracy_task1.m           # Script per calcolare l'accuratezza del modello
  ┃ ┣ 📜 task1_final.m              # Script principale per l'esecuzione del Task 1  
  ┣ 📂 task2/               # Task 2: Classificazione guasti
  ┃ ┣ 📂 1st classifier/
  ┃ ┃ ┣ 📂 results/         
  ┃ ┃ ┣ 📜 task2_1st.m      # Script per il primo classificatore
+ ┃ ┣ 📜 confusion_matrix_t2_1st.m   
  ┃ ┣ 📂 2nd classifier/
  ┃ ┃ ┣ 📂 results/
- ┃ ┃ ┣ 📜 fine_gaussian_t2_2nd.mat   # Modello per il secondo classificatore      
+ ┃ ┃ ┣ 📜 fine_gaussian_t2_2nd.mat   # Modello per il secondo classificatore
+ ┃ ┣ 📜 confusion_matrix_t2_2nd.m
  ┃ ┣ 📜 task2_2nd.m      # Script per il secondo classificatore
  ┣ 📂 task3/               # Task 3: Localizzazione guasto
  ┃ ┣ 📂 results/
  ┃ ┃ ┣ 📜 linear_svm.mat             # Modello per il Task 3
  ┃ ┣ 📜 accuracy_task3.m            # Script per calcolare l'accuratezza del modello
+ ┃ ┣ 📜 confusion_matrix_t3.m
  ┃ ┣ 📜 task3.m                     # Script principale per l'esecuzione del Task 3
  ┣ 📂 task4/                   # Task 4: Identificazione della valvola guasta
  ┃ ┣ 📂 results/            
- ┃ ┃ ┣ 📜 baggedTrees_t4.mat   # Modello per il Task 4
+ ┃ ┃ ┣ 📜 baggedTrees.mat   # Modello per il Task 4
  ┃ ┣ 📜 accuracy_task4.m     # Script per calcolare l'accuratezza del modello
+ ┃ ┣ 📜 confusion_matrix_t4.m
  ┃ ┣ 📜 task4.m                # Script principale per l'esecuzione del Task 4
  ┣ 📂 task5/                   # Task 5: Stima della percentuale di apertura
  ┃ ┣ 📂 results/
  ┃ ┃ ┣ 📜 baggedTrees_t5.mat   # Modello finale basato su Bagged Trees
- ┃ ┃ ┣ 📜 feature_gen_t5.m     # Script di generazione delle feature
- ┃ ┃ ┣ 📜 feature_gen_t5.mat   # Feature generate salvate in formato .mat
- ┃ ┃ ┣ 📜 rmse_mae_task5.m     # Script per calcolare RMSE e MAE del modello
+ ┃ ┣ 📜 feature_gen_t5.m     # Script di generazione delle feature
+ ┃ ┣ 📜 feature_gen_t5.mat   # Feature generate salvate in formato .mat
+ ┃ ┣ 📜 rmse_mae_task5.m     # Script per calcolare RMSE e MAE del modello
  ┃ ┣ 📜 task5.m                # Script principale per l'esecuzione del Task 5
+ ┣ 📜 results.csv
+ ┣ 📜 README.md
  ┗ 📜 PHMAP_23.prj         # File di progetto MATLAB
 ```
 
@@ -213,12 +220,12 @@ Il modello complessivo ha raggiunto un'accuratezza globale del **XX%**, consider
 - Task 1 → **93.48%**
 - Task 2 →
    - Primo classificatore: **100%**
-   - Secondo classificatore: **93.48%**
-- **Task 3** → **100%**
-- **Task 4** → **85,71%**
-- **Task 5** →  
-  - **RMSE:** XX  
-  - **MAE:** XX
+   - Secondo classificatore: **100%**
+- Task 3 → **100%**
+- Task 4 → **85.71%**
+- Task 5 →  
+  - RMSE: **10.3506**  
+  - MAE: **3.5204**
 
 
 ---
