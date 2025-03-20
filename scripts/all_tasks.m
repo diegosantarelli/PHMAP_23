@@ -1,3 +1,5 @@
+clc;
+
 %% Import dei dati
 disp('Importazione dati...');
 import_data; % Assicurati che questo carichi i dati necessari

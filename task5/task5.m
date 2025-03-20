@@ -43,10 +43,9 @@ test_set_task5 = test_set();
 % Ottenere il numero di record nel test set
 numRecords = height(test_set_task5);
 
-% Creare un array di nomi "CaseXXX"
-caseNames = strcat("Case", string(178:178+numRecords-1));
+caseNumbers = string(178:178+numRecords-1)';
 
-test_set_task5.Name = caseNames';
+test_set_task5.Name = caseNumbers;
 
 colName = "";
 if ismember('Task4', results_t4.Properties.VariableNames)
@@ -132,4 +131,3 @@ results_t5 = results_t5(:, {'Case', 'Task1', 'Task2', 'Task3', 'Task4', 'Task5'}
 
 % Salvare il file aggiornato con Task 3 senza sovrascrivere altri dati
 writetable(results_t5, 'results.csv');
-

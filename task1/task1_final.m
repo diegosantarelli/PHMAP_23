@@ -165,9 +165,6 @@ F_values(isinf(F_values) | isnan(F_values)) = max(F_values(~isinf(F_values) & ~i
 selected_feature_names = features_numeric.Properties.VariableNames(sorted_idx(1:num_features_select));
 selected_features = features(:, [selected_feature_names, "Task1"]); % Mantiene anche l'etichetta
 
-% --- Salva la tabella con le feature selezionate nel workspace ---
-assignin('base', 'selected_features_anova', selected_features);
-
 % Visualizza le feature selezionate
 %disp('Feature selezionate con ANOVA:');
 %disp(selected_feature_names);

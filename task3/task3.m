@@ -179,8 +179,8 @@ selected_features_task3 = features(:, ["Case", "Window_ID", selected_feature_nam
 assignin('base', 'selected_features_task3', selected_features_task3);
 
 % Visualizza la tabella con le feature selezionate
-disp('Feature selezionate per Task 3:');
-disp(selected_feature_names);
+% disp('Feature selezionate per Task 3:');
+% disp(selected_feature_names);
 
 
 
@@ -363,4 +363,4 @@ results_t3.Task3(isnan(results_t3.Task3)) = 0;
 % Salva il file aggiornato
 writetable(results_t3, 'results.csv');
 
-disp('Predizioni per Task 3 completate e salvate in results.csv.');
+%disp('Predizioni per Task 3 completate e salvate in results.csv.');

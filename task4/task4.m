@@ -125,7 +125,7 @@ featureTable_task4 = cell2table(feature_rows_task4, 'VariableNames', column_name
 % Salva la tabella nel workspace
 assignin('base', 'featureTable_task4', featureTable_task4);
 
-disp('Feature extraction completata per Task 4.');
+%disp('Feature extraction completata per Task 4.');
 
 %% **FEATURE IMPORTANCE - ANOVA per Task 4**
 
@@ -157,15 +157,15 @@ sorted_features_task4 = features_numeric_task4.Properties.VariableNames(sorted_i
 num_features_to_plot_task4 = min(15, num_features_task4);
 
 % Plotta il grafico della feature importance (Prime 15 feature)
-figure;
-bar(sorted_F_task4(1:num_features_to_plot_task4));
-title('Feature Importance - ANOVA (Top 15 Features) - Task 4');
-xlabel('Feature Name');
-ylabel('F-Value');
-xticks(1:num_features_to_plot_task4);
-xticklabels(sorted_features_task4(1:num_features_to_plot_task4));
-xtickangle(90); % Ruota le etichette delle feature
-grid on;
+% figure;
+% bar(sorted_F_task4(1:num_features_to_plot_task4));
+% title('Feature Importance - ANOVA (Top 15 Features) - Task 4');
+% xlabel('Feature Name');
+% ylabel('F-Value');
+% xticks(1:num_features_to_plot_task4);
+% xticklabels(sorted_features_task4(1:num_features_to_plot_task4));
+% xtickangle(90); % Ruota le etichette delle feature
+% grid on;
 
 % Seleziona le prime **15** feature più importanti
 num_features_to_keep_task4 = 15;
@@ -177,8 +177,8 @@ selected_features_task4 = features_task4(:, ["Case", "Window_ID", selected_featu
 % Salva il dataset con le feature selezionate
 assignin('base', 'selected_features_task4', selected_features_task4);
 
-disp('Feature selezionate per Task 4:');
-disp(selected_feature_names_task4);
+% disp('Feature selezionate per Task 4:');
+% disp(selected_feature_names_task4);
 
 %% **TASK 4 - Estrazione delle Feature per il Test Set (Valve Fault)**
 
@@ -196,11 +196,11 @@ filtered_cases_task4 = string(filtered_cases_task4);
 test_set_task4 = test_set_complete(ismember(test_set_complete.Name, filtered_cases_task4), :);
 
 % Debug: Controlla se i Case selezionati sono corretti
-disp("Numero di casi selezionati per il test:");
-disp(height(test_set_task4));
-
-disp("Casi selezionati:");
-disp(test_set_task4.Name);
+% disp("Numero di casi selezionati per il test:");
+% disp(height(test_set_task4));
+% 
+% disp("Casi selezionati:");
+% disp(test_set_task4.Name);
 
 % Imposta la durata della finestra
 window_size = 0.400;
@@ -299,7 +299,7 @@ end
 % Creazione della tabella finale
 featureTable_test_task4 = cell2table(feature_rows_test_task4, 'VariableNames', column_names_task4);
 
-disp("Feature extraction completata per il Test Set di Task 4.");
+%disp("Feature extraction completata per il Test Set di Task 4.");
 
 %% **SELEZIONE DELLE FEATURE - TEST SET (Task 4)**
 
@@ -309,8 +309,8 @@ selected_features_test_task4 = featureTable_test_task4(:, ["Case", "Window_ID", 
 % Salva il dataset con le feature selezionate
 assignin('base', 'selected_features_test_task4', selected_features_test_task4);
 
-disp('Feature selezionate per il Test Set di Task 4:');
-disp(selected_feature_names_task4);
+% disp('Feature selezionate per il Test Set di Task 4:');
+% disp(selected_feature_names_task4);
 
 %% **TASK 4 - Predizioni e Majority Voting**
 
@@ -368,5 +368,5 @@ results_t4.Task4(isnan(results_t4.Task4)) = 0;
 % Salva il file aggiornato
 writetable(results_t4, 'results.csv');
 
-disp('Predizioni per Task 4 completate e salvate in results.csv.');
+%disp('Predizioni per Task 4 completate e salvate in results.csv.');
 

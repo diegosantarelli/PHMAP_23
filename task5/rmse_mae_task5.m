@@ -1,11 +1,9 @@
-task5;
-
 %%
 % **Caricamento delle etichette reali dal file answer.csv**
 test_set_labeled_t5 = readtable('dataset/test/answer.csv', 'VariableNamingRule', 'preserve');
 
 % **Rinominare la colonna 'ID' in 'Case' e trasformare i valori in 'CaseXXX'**
-test_set_labeled_t5.Case = strcat('Case', string(test_set_labeled_t5.ID));
+test_set_labeled_t5.Case = test_set_labeled_t5.ID;
 
 % **Mantenere solo le colonne 'Case' e 'task5' (etichette reali)**
 test_set_labeled_t5 = test_set_labeled_t5(:, {'Case', 'task5'});

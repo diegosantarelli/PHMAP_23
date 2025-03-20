@@ -41,7 +41,7 @@ col_real = 'Task2';
 
 % Controllo se entrambe le colonne esistono nella tabella
 if any(~ismember({col_predizioni, col_real}, merged_table.Properties.VariableNames))
-    error('❌ Errore: Le colonne necessarie non esistono nella tabella unita!');
+    error('Errore: Le colonne necessarie non esistono nella tabella unita!');
 end
 
 % Calcolare l'accuratezza confrontando le etichette predette con quelle reali
