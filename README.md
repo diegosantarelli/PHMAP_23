@@ -37,30 +37,30 @@ Il repository è organizzato come segue:
  ┣ 📂 scripts/             # Script principali e di supporto
  ┃ ┣ 📜 all_tasks.m        # Script principale che esegue l'intera pipeline
  ┃ ┣ 📜 import_data.m      # Script per l'importazione dei dati
+ ┃ ┣ 📜 power_spectrum.m   # Script per generare gli spettri di potenza di ogni sensore
  ┃ ┣ 📜 test_set.m         # Definizione del test set
  ┣ 📂 task1/               # Task 1: Rilevamento guasti
- ┃ ┃ ┣ 📂 results/         
+ ┃ ┃ ┣ 📂 results/
+ ┃ ┃ ┣ 📜 coarse_tree_final.mat    # Modello per il Task 1
+ ┃ ┣ 📜 accuracy_task1.m           # Script per calcolare l'accuratezza del modello
+ ┃ ┣ 📜 task1_final.m              # Script principale per l'esecuzione del Task 1  
  ┣ 📂 task2/               # Task 2: Classificazione guasti
  ┃ ┣ 📂 1st classifier/
  ┃ ┃ ┣ 📂 results/         
  ┃ ┃ ┣ 📜 task2_1st.m      # Script per il primo classificatore
  ┃ ┣ 📂 2nd classifier/
- ┃ ┃ ┣ 📂 results/         
- ┃ ┃ ┣ 📜 task2_2nd.m      # Script per il secondo classificatore
+ ┃ ┃ ┣ 📂 results/
+ ┃ ┃ ┣ 📜 fine_gaussian_t2_2nd.mat   # Modello per il secondo classificatore      
+ ┃ ┣ 📜 task2_2nd.m      # Script per il secondo classificatore
  ┣ 📂 task3/               # Task 3: Localizzazione guasto
  ┃ ┣ 📂 results/
- ┃ ┃ ┣ 📜 all_models_second_try.mat   # Modelli testati nella seconda iterazione
- ┃ ┃ ┣ 📜 SubspaceKNN.mat             # Modello finale basato su Subspace KNN
- ┃ ┃ ┣ 📜 accuracy_task3.m            # Script per calcolare l'accuratezza del modello
- ┃ ┃ ┣ 📜 feature_gen_t3.m            # Script di generazione delle feature
- ┃ ┃ ┣ 📜 feature_gen_t3.mat          # Feature generate salvate in formato .mat
- ┃ ┣ 📜 task3.m                       # Script principale per l'esecuzione del Task 3
+ ┃ ┃ ┣ 📜 linear_svm.mat             # Modello per il Task 3
+ ┃ ┣ 📜 accuracy_task3.m            # Script per calcolare l'accuratezza del modello
+ ┃ ┣ 📜 task3.m                     # Script principale per l'esecuzione del Task 3
  ┣ 📂 task4/                   # Task 4: Identificazione della valvola guasta
  ┃ ┣ 📂 results/            
- ┃ ┃ ┣ 📜 baggedTrees_t4.mat   # Modello finale basato su Bagged Trees
- ┃ ┃ ┣ 📜 accuracy_task4.m     # Script per calcolare l'accuratezza del modello
- ┃ ┃ ┣ 📜 prova_t4.m           # Script di test aggiuntivo
- ┃ ┃ ┣ 📜 prova_t4.mat         # Risultati salvati in formato .mat
+ ┃ ┃ ┣ 📜 baggedTrees_t4.mat   # Modello per il Task 4
+ ┃ ┣ 📜 accuracy_task4.m     # Script per calcolare l'accuratezza del modello
  ┃ ┣ 📜 task4.m                # Script principale per l'esecuzione del Task 4
  ┣ 📂 task5/                   # Task 5: Stima della percentuale di apertura
  ┃ ┣ 📂 results/
@@ -213,9 +213,9 @@ Il modello complessivo ha raggiunto un'accuratezza globale del **XX%**, consider
 - Task 1 → **93.48%**
 - Task 2 →
    - Primo classificatore: **100%**
-   - Secondo classificatore: **XX%**
-- **Task 3** → **XX%**
-- **Task 4** → **XX%**
+   - Secondo classificatore: **93.48%**
+- **Task 3** → **100%**
+- **Task 4** → **85,71%**
 - **Task 5** →  
   - **RMSE:** XX  
   - **MAE:** XX
