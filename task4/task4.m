@@ -1,136 +1,372 @@
-training_set_task4 = labeledData(labeledData.Task4 ~= 0, {'Case', 'Task4'});
+%% **Preparazione del Training Set per Task 4 (Valve Fault)**
 
-%%
-% Numero di copie da generare (esclusa l'originale)
-num_copies = 3;
+% Filtra i casi con Task2 == 3 (Valve Fault)
+training_set_task4 = labeledData(labeledData.Task2 == 3, {'Name', 'Case', 'Task4'});
 
-% Creiamo il dataset aumentato
-augmented_data = training_set_task4; % Iniziamo con il dataset originale
+% Imposta la durata della finestra in secondi
+window_size = 0.400;
 
-for i = 2:num_copies % Iniziamo da 2 perché il primo è il dataset originale
-    noisy_data = training_set_task4; % Copia dell'originale
+% Inizializza una cell array per raccogliere i dati
+feature_rows_task4 = {};
 
-    % Itera su ogni riga per modificare i dati dentro le sottotabelle "Case"
-    for j = 1:height(noisy_data)
-        if istable(noisy_data.Case{j})  % Controlla se la cella contiene una tabella
-            % Identifica le colonne numeriche ESCLUDENDO 'TIME'
-            numeric_columns = setdiff(noisy_data.Case{j}.Properties.VariableNames, {'TIME'});
+% Itera su ogni caso nel training set
+for i = 1:height(training_set_task4)
+    % Estrai la sottotabella del caso attuale
+    case_data = training_set_task4.Case{i};  
+    
+    % Usa l'indice come identificativo del Case
+    case_id = training_set_task4.Name(i);
 
-            % Aggiunta di rumore solo alle colonne numeriche (tranne TIME)
-            for col = numeric_columns
-                col_name = char(col); % Converte in stringa per accesso alla tabella
-                noise_factor = 0.02 * std(noisy_data.Case{j}{:, col_name});
-                noisy_data.Case{j}.(col_name) = noisy_data.Case{j}.(col_name) + ...
-                    noise_factor .* randn(size(noisy_data.Case{j}.(col_name)));
-            end
+    % Recupera l'etichetta Task4 del caso
+    case_label = training_set_task4.Task4(i);
+
+    % Estrai il tempo
+    time = case_data.TIME; 
+    
+    % Ottieni i nomi delle colonne dei segnali (tutti eccetto TIME)
+    signal_columns = case_data.Properties.VariableNames(2:end);
+    
+    % Calcolo corretto della durata totale
+    total_duration = max(time) - min(time);
+    
+    % Calcola il numero di finestre
+    num_windows = max(1, floor(total_duration / window_size));
+
+    % Itera su ogni finestra
+    for w = 1:num_windows
+        % Calcola i limiti della finestra
+        start_time = min(time) + (w-1) * window_size;
+        end_time = start_time + window_size;
+        
+        % Seleziona i dati nella finestra
+        idx = (time >= start_time) & (time < end_time);
+
+        % Se la finestra è vuota o contiene meno di 2 elementi, la salta
+        if sum(idx) < 2
+            continue;
         end
+        
+        % Inizializza un vettore per la riga della tabella
+        row_features = {case_id, w};
+        
+        % Itera su ogni colonna di segnale (P1, P2, ..., Pn)
+        for col = 1:length(signal_columns)
+            signal_name = signal_columns{col}; % Nome del segnale
+            window_signal = case_data.(signal_name)(idx); % Estrai i dati della finestra
+            
+            % --- FEATURE TEMPORALI ---
+            mean_val = mean(window_signal, 'omitnan');
+            median_val = median(window_signal, 'omitnan');
+            p25_val = prctile(window_signal, 25);
+            p75_val = prctile(window_signal, 75);
+            var_val = var(window_signal, 'omitnan');
+            integral_val = trapz(time(idx), window_signal); % Integrale numerico
+            min_val = min(window_signal, [], 'omitnan');
+            max_val = max(window_signal, [], 'omitnan');
+            
+            % --- FEATURE FREQUENZIALI ---
+            % Frequenza di campionamento stimata
+            Fs = 1 / mean(diff(time(idx))); 
+            
+            % Evita errori in caso di Fs non valido
+            if isinf(Fs) || isnan(Fs) || Fs <= 0
+                Fs = 1; % Assegna un valore di default
+            end
+
+            % Calcola lo spettro di potenza con pwelch
+            [pxx, f] = pwelch(window_signal, [], [], [], Fs); 
+            
+            % Valore di picco e frequenza di picco
+            [peak_value, peak_idx] = max(pxx);
+            peak_freq = f(peak_idx);
+            
+            % Somma dello spettro di potenza e deviazione standard
+            sum_power_spectrum = sum(pxx);
+            std_power_spectrum = std(pxx);
+            
+            % RMS nel dominio della frequenza
+            rms_freq = sqrt(mean(pxx));
+
+            % Aggiungi le feature alla riga
+            row_features = [row_features, mean_val, median_val, p25_val, p75_val, var_val, integral_val, ...
+                min_val, max_val, peak_value, peak_freq, sum_power_spectrum, std_power_spectrum, rms_freq];
+        end
+        
+        % Aggiungi l'etichetta
+        row_features = [row_features, case_label];
+        
+        % Salva la riga
+        feature_rows_task4 = [feature_rows_task4; row_features];
     end
-
-    % Aggiungi il dataset modificato a quello aumentato
-    augmented_data = [augmented_data; noisy_data];
 end
 
-% Shuffle finale per evitare pattern ripetitivi
-augmented_data = augmented_data(randperm(height(augmented_data)), :);
+% Costruisci la tabella con nomi di colonna adeguati
+column_names_task4 = {'Case', 'Window_ID'};
 
-% Il dataset aumentato ora può essere usato per il training
-training_set_task4 = augmented_data;
-
-%%
-test_set_task4 = test_set();
-
-% Ottenere il numero di record nel test set
-numRecords = height(test_set_task4);
-
-% Creare un array di nomi "CaseXXX"
-caseNames = strcat("Case", string(178:178+numRecords-1));
-
-test_set_task4.Name = caseNames';
-
-% Controlla il nome corretto della colonna Task2
-colName_t4 = "";
-if ismember('Task2', results_t2_2nd.Properties.VariableNames)
-    colName_t4 = 'Task2';
-elseif ismember('CaseLabel_results_t2_2nd', results_t2_2nd.Properties.VariableNames)
-    colName_t4 = 'CaseLabel_results_t2_2nd';
-else
-    error('Errore: né Task2 né CaseLabel_results_t2_2nd trovati in results_t2_2nd!');
+% Aggiungi i nomi delle feature per ogni segnale
+for col = 1:length(signal_columns)
+    signal_name = signal_columns{col};
+    column_names_task4 = [column_names_task4, ...
+        strcat(signal_name, '_Mean'), strcat(signal_name, '_Median'), ...
+        strcat(signal_name, '_P25'), strcat(signal_name, '_P75'), ...
+        strcat(signal_name, '_Variance'), strcat(signal_name, '_Integral'), ...
+        strcat(signal_name, '_Min'), strcat(signal_name, '_Max'), ...
+        strcat(signal_name, '_PeakValue'), strcat(signal_name, '_PeakFreq'), ...
+        strcat(signal_name, '_SumPowerSpectrum'), strcat(signal_name, '_StdPowerSpectrum'), ...
+        strcat(signal_name, '_RMS_Frequency')];
 end
 
-% Usa il nome corretto per filtrare i dati
-filtered_results_t2 = results_t2_2nd(results_t2_2nd.(colName_t4) == 3, {'Case'});
+% Aggiungi l'etichetta finale
+column_names_task4 = [column_names_task4, 'Task4'];
 
-filtered_results_t2.Properties.VariableNames{'Case'} = 'Name';
+% Converti in tabella
+featureTable_task4 = cell2table(feature_rows_task4, 'VariableNames', column_names_task4);
 
-% Unire test_set_task3 con i Case filtrati, mantenendo solo le corrispondenze
-test_set_task4 = innerjoin(test_set_task4, filtered_results_t2, 'Keys', 'Name');
+% Salva la tabella nel workspace
+assignin('base', 'featureTable_task4', featureTable_task4);
 
-test_set_task4.Task4 = NaN(height(test_set_task4), 1);
+disp('Feature extraction completata per Task 4.');
 
-[featureTable_test_task4, ~] = prova_t4(test_set_task4);
+%% **FEATURE IMPORTANCE - ANOVA per Task 4**
 
-% Creare una mappatura tra i Case originali e le finestre temporali
-numFeatureRows = height(featureTable_test_task4);
-numTestRows = height(test_set_task4);
+% Carica il dataset con le feature
+features_task4 = featureTable_task4;
+features_numeric_task4 = features_task4(:, 3:end-1); % Esclude 'Case', 'Window_ID', 'Task4'
+labels_task4 = features_task4.Task4; % Etichetta di classificazione
 
-% Se featureTable ha più righe di test_set_task3, ripetiamo i nomi dei Case
-if numFeatureRows > numTestRows
-    repeatedNames = repelem(test_set_task4.Name, numFeatureRows / numTestRows);
-    featureTable_test_task4.Name = repeatedNames;
-else
-    featureTable_test_task4.Name = test_set_task4.Name;
+% Numero di feature
+num_features_task4 = width(features_numeric_task4);
+
+% Inizializza il vettore dei p-values
+p_values_task4 = zeros(1, num_features_task4);
+
+% Calcola il valore F di ANOVA per ogni feature
+for i = 1:num_features_task4
+    p_values_task4(i) = anova1(table2array(features_numeric_task4(:, i)), labels_task4, 'off');
 end
 
-load('task4/results/baggedTrees_t4.mat', 'prova_model_t4');
+% Converti p-values in F-values (F = 1/p_values)
+F_values_task4 = 1 ./ p_values_task4;
+F_values_task4(isinf(F_values_task4) | isnan(F_values_task4)) = max(F_values_task4(~isinf(F_values_task4) & ~isnan(F_values_task4))) * 1.1; % Evita infiniti e NaN
 
-% Predire le etichette per tutte le finestre di featureTable_test_task3
-predicted_labels = prova_model_t4.predictFcn(featureTable_test_task4);
+% Ordina le feature in base ai valori F (le più importanti per prime)
+[sorted_F_task4, sorted_idx_task4] = sort(F_values_task4, 'descend');
+sorted_features_task4 = features_numeric_task4.Properties.VariableNames(sorted_idx_task4);
 
-% Aggiungere le predizioni alla tabella delle feature
-featureTable_test_task4.PredictedLabel = predicted_labels;
+% Numero di feature da visualizzare
+num_features_to_plot_task4 = min(15, num_features_task4);
 
-% Verificare che la colonna 'Name' esista
-if ~ismember('Name', featureTable_test_task4.Properties.VariableNames)
-    error('La colonna "Name" non esiste in featureTable_test_task4!');
+% Plotta il grafico della feature importance (Prime 15 feature)
+figure;
+bar(sorted_F_task4(1:num_features_to_plot_task4));
+title('Feature Importance - ANOVA (Top 15 Features) - Task 4');
+xlabel('Feature Name');
+ylabel('F-Value');
+xticks(1:num_features_to_plot_task4);
+xticklabels(sorted_features_task4(1:num_features_to_plot_task4));
+xtickangle(90); % Ruota le etichette delle feature
+grid on;
+
+% Seleziona le prime **15** feature più importanti
+num_features_to_keep_task4 = 15;
+selected_feature_names_task4 = sorted_features_task4(1:num_features_to_keep_task4);
+
+% Crea un nuovo dataset con solo le **top 15 feature**
+selected_features_task4 = features_task4(:, ["Case", "Window_ID", selected_feature_names_task4, "Task4"]); 
+
+% Salva il dataset con le feature selezionate
+assignin('base', 'selected_features_task4', selected_features_task4);
+
+disp('Feature selezionate per Task 4:');
+disp(selected_feature_names_task4);
+
+%% **TASK 4 - Estrazione delle Feature per il Test Set (Valve Fault)**
+
+% Carica il test set completo
+test_set_complete = test_set();
+
+% Filtra solo i Case che hanno Task2 == 3 (Valve Fault)
+filtered_cases_task4 = final_predictions_t2.Case(final_predictions_t2.Task2 == 3);
+
+% Assicura che Case sia trattato come stringa
+test_set_complete.Name = string(test_set_complete.Name);
+filtered_cases_task4 = string(filtered_cases_task4);
+
+% Seleziona solo i Case di interesse
+test_set_task4 = test_set_complete(ismember(test_set_complete.Name, filtered_cases_task4), :);
+
+% Debug: Controlla se i Case selezionati sono corretti
+disp("Numero di casi selezionati per il test:");
+disp(height(test_set_task4));
+
+disp("Casi selezionati:");
+disp(test_set_task4.Name);
+
+% Imposta la durata della finestra
+window_size = 0.400;
+
+% Inizializza cell array per raccogliere le feature
+feature_rows_test_task4 = {};
+
+% Itera su ogni caso nel test set
+for i = 1:height(test_set_task4)
+    % Estrai la sottotabella del caso attuale
+    case_data = test_set_task4.Case{i};  
+    
+    % Identificativo del Case
+    case_id = test_set_task4.Name(i);
+
+    % Estrai il tempo
+    time = case_data.TIME; 
+    
+    % Ottieni i nomi delle colonne dei segnali (tutti eccetto TIME)
+    signal_columns = case_data.Properties.VariableNames(2:end);
+    
+    % Calcola la durata totale e il numero di finestre
+    total_duration = max(time) - min(time);
+    num_windows = max(1, floor(total_duration / window_size));
+
+    % Itera sulle finestre temporali
+    for w = 1:num_windows
+        % Calcola i limiti della finestra
+        start_time = min(time) + (w-1) * window_size;
+        end_time = start_time + window_size;
+        
+        % Seleziona i dati nella finestra
+        idx = (time >= start_time) & (time < end_time);
+
+        % Se la finestra è vuota o contiene meno di 2 elementi, la salta
+        if sum(idx) < 2, continue; end
+
+        % Inizializza il vettore per la riga della tabella
+        row_features = {case_id, w};
+        
+        % Itera su ogni colonna di segnale
+        for col = 1:length(signal_columns)
+            signal_name = signal_columns{col};  
+            window_signal = case_data.(signal_name)(idx); 
+
+            % --- FEATURE TEMPORALI ---
+            mean_val = mean(window_signal, 'omitnan');
+            median_val = median(window_signal, 'omitnan');
+            p25_val = prctile(window_signal, 25);
+            p75_val = prctile(window_signal, 75);
+            var_val = var(window_signal, 'omitnan');
+            integral_val = trapz(time(idx), window_signal);
+            min_val = min(window_signal, [], 'omitnan');
+            max_val = max(window_signal, [], 'omitnan');
+
+            % --- FEATURE FREQUENZIALI ---
+            Fs = 1 / mean(diff(time(idx))); 
+            if isinf(Fs) || isnan(Fs) || Fs <= 0, Fs = 1; end
+
+            % Calcola lo spettro di potenza con pwelch
+            [pxx, f] = pwelch(window_signal, [], [], [], Fs); 
+
+            % Frequenza e valore di picco
+            [peak_value, peak_idx] = max(pxx);
+            peak_freq = f(peak_idx);
+
+            % Somma spettro di potenza, deviazione standard e RMS
+            sum_power_spectrum = sum(pxx);
+            std_power_spectrum = std(pxx);
+            rms_freq = sqrt(mean(pxx));
+
+            % Aggiungi le feature alla riga
+            row_features = [row_features, mean_val, median_val, p25_val, p75_val, var_val, integral_val, ...
+                min_val, max_val, peak_value, peak_freq, sum_power_spectrum, std_power_spectrum, rms_freq];
+        end
+        
+        % Salva la riga nella lista di feature
+        feature_rows_test_task4 = [feature_rows_test_task4; row_features];
+    end
 end
-featureTable_test_task4.Name = string(featureTable_test_task4.Name);
 
-% Aggregazione per Case con voto di maggioranza
-grouped_results = groupsummary(featureTable_test_task4, 'Name', 'mode', 'PredictedLabel');
-grouped_results.Properties.VariableNames{'Name'} = 'Case';
-grouped_results.Properties.VariableNames{'mode_PredictedLabel'} = 'Task4';
+% Costruisci la tabella con nomi di colonna adeguati
+column_names_task4 = {'Case', 'Window_ID'};
+for col = 1:length(signal_columns)
+    signal_name = signal_columns{col};
+    column_names_task4 = [column_names_task4, ...
+        strcat(signal_name, '_Mean'), strcat(signal_name, '_Median'), ...
+        strcat(signal_name, '_P25'), strcat(signal_name, '_P75'), ...
+        strcat(signal_name, '_Variance'), strcat(signal_name, '_Integral'), ...
+        strcat(signal_name, '_Min'), strcat(signal_name, '_Max'), ...
+        strcat(signal_name, '_PeakValue'), strcat(signal_name, '_PeakFreq'), ...
+        strcat(signal_name, '_SumPowerSpectrum'), strcat(signal_name, '_StdPowerSpectrum'), ...
+        strcat(signal_name, '_RMS_Frequency')];
+end
 
-% Rimuovere eventuali colonne indesiderate da grouped_results
-colsToRemove = {'GroupCount', 'Task4_grouped_results'};
-grouped_results = removevars(grouped_results, intersect(colsToRemove, grouped_results.Properties.VariableNames));
+% Creazione della tabella finale
+featureTable_test_task4 = cell2table(feature_rows_test_task4, 'VariableNames', column_names_task4);
 
-% Caricare il file CSV esistente con i risultati di Task 1 e Task 2
+disp("Feature extraction completata per il Test Set di Task 4.");
+
+%% **SELEZIONE DELLE FEATURE - TEST SET (Task 4)**
+
+% Usa le stesse feature selezionate nel training
+selected_features_test_task4 = featureTable_test_task4(:, ["Case", "Window_ID", selected_feature_names_task4]);
+
+% Salva il dataset con le feature selezionate
+assignin('base', 'selected_features_test_task4', selected_features_test_task4);
+
+disp('Feature selezionate per il Test Set di Task 4:');
+disp(selected_feature_names_task4);
+
+%% **TASK 4 - Predizioni e Majority Voting**
+
+% Carica il modello addestrato per il Task 4
+load('task4/results/bagged_trees.mat', 'bagged_trees');
+
+% Rimuove 'Case' e 'Window_ID' per la predizione
+test_features_task4 = selected_features_test_task4(:, 3:end); 
+
+% Esegue la predizione
+predicted_labels_task4 = bagged_trees.predictFcn(test_features_task4);
+
+% Aggiunge le predizioni alla tabella delle feature
+selected_features_test_task4.PredictedTask4 = predicted_labels_task4;
+
+% --- Aggregazione per Case con Majority Voting ---
+unique_cases_task4 = unique(selected_features_test_task4.Case);
+final_predictions_task4 = table(unique_cases_task4, zeros(size(unique_cases_task4)), 'VariableNames', {'Case', 'Task4'});
+
+for i = 1:length(unique_cases_task4)
+    case_id = unique_cases_task4(i);
+    
+    % Seleziona tutte le predizioni per lo stesso Case
+    case_predictions = selected_features_test_task4.PredictedTask4(selected_features_test_task4.Case == case_id);
+    
+    % Majority voting: trova l'etichetta più frequente
+    final_label = mode(case_predictions);
+    
+    % Assegna l'etichetta finale
+    final_predictions_task4.Task4(i) = final_label;
+end
+
+%% **AGGIORNAMENTO DEL FILE RESULTS.CSV**
+
+% Carica il file CSV con Task1, Task2 e Task3
 results_t4 = readtable('results.csv', 'VariableNamingRule', 'preserve');
 
-% Se la colonna Task3 non esiste, la inizializziamo a 0
+% Se la colonna Task4 non esiste, la aggiunge
 if ~ismember('Task4', results_t4.Properties.VariableNames)
     results_t4.Task4 = zeros(height(results_t4), 1);
 end
 
-% Unire le predizioni reali con il file esistente (Left Join)
-results_t4 = outerjoin(results_t4, grouped_results, 'LeftKeys', 'Case', 'RightKeys', 'Case', 'MergeKeys', true);
+% Unisce le nuove predizioni con il file esistente (Left Join)
+results_t4 = outerjoin(results_t4, final_predictions_task4, 'LeftKeys', 'Case', 'RightKeys', 'Case', 'MergeKeys', true);
 
-% Se Task3_grouped_results esiste, copiarne i valori in Task3 e rimuoverla
-if ismember('Task4_grouped_results', results_t4.Properties.VariableNames)
-    results_t4.Task4 = results_t4.Task4_grouped_results;
-    results_t4 = removevars(results_t4, 'Task4_grouped_results'); % Rimuovere la colonna temporanea
+% Se "Task4_final_predictions_task4" esiste, copia i valori in Task4 e la rimuove
+if ismember('Task4_final_predictions_task4', results_t4.Properties.VariableNames)
+    results_t4.Task4 = results_t4.Task4_final_predictions_task4;
+    results_t4 = removevars(results_t4, 'Task4_final_predictions_task4'); 
 end
 
-% Sostituire i NaN con 0 in Task3
+% Sostituisce i NaN con 0
 results_t4.Task4(isnan(results_t4.Task4)) = 0;
 
-% Rimuovere la colonna GroupCount se presente
-if ismember('GroupCount', results_t4.Properties.VariableNames)
-    results_t4 = removevars(results_t4, 'GroupCount');
-end
-
-% Mantieni solo le colonne desiderate nel file finale
-results_t4 = results_t4(:, {'Case', 'Task1', 'Task2', 'Task3', 'Task4'});
-
-% Salvare il file aggiornato con Task 3 senza sovrascrivere altri dati
+% Salva il file aggiornato
 writetable(results_t4, 'results.csv');
+
+disp('Predizioni per Task 4 completate e salvate in results.csv.');
+

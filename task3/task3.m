@@ -192,7 +192,7 @@ disp(selected_feature_names);
 test_set_complete = test_set();
 
 % Filtra solo i Case che hanno Task2 == 2 (caso del Task 3)
-filtered_cases = results_task2.Case(results_task2.Task2 == 2);
+filtered_cases = final_predictions_t2.Case(final_predictions_t2.Task2 == 2);
 
 % Assicura che Case sia trattato come stringa
 test_set_complete.Name = string(test_set_complete.Name);
@@ -338,7 +338,7 @@ for i = 1:length(unique_cases)
 end
 
 
-%% AGGIORNAMENTO DEL FILE RESULTS.CSV SENZA "Task3_results_t3"
+%% AGGIORNAMENTO DEL FILE RESULTS.CSV
 
 % Carica il file CSV con Task1 e Task2
 results_t3 = readtable('results.csv', 'VariableNamingRule', 'preserve');
@@ -351,7 +351,7 @@ end
 % Unisce le nuove predizioni con il file esistente (Left Join)
 results_t3 = outerjoin(results_t3, final_predictions_task3, 'LeftKeys', 'Case', 'RightKeys', 'Case', 'MergeKeys', true);
 
-% Se "Task3_final_predictions_task3" esiste, copia i valori in Task3 e la rimuove
+% Se Task3_final_predictions_task3 esiste, copia i valori in Task3 e la rimuove
 if ismember('Task3_final_predictions_task3', results_t3.Properties.VariableNames)
     results_t3.Task3 = results_t3.Task3_final_predictions_task3;
     results_t3 = removevars(results_t3, 'Task3_final_predictions_task3'); 
@@ -360,12 +360,7 @@ end
 % Sostituisce i NaN con 0
 results_t3.Task3(isnan(results_t3.Task3)) = 0;
 
-% **Rimuove la colonna "Task3_results_t3" se presente**
-if ismember('Task3_results_t3', results_t3.Properties.VariableNames)
-    results_t3 = removevars(results_t3, 'Task3_results_t3');
-end
-
-% Salva il file aggiornato SENZA "Task3_results_t3"
+% Salva il file aggiornato
 writetable(results_t3, 'results.csv');
 
-disp('Predizioni per Task 3 completate e salvate in results.csv senza Task3_results_t3.');
+disp('Predizioni per Task 3 completate e salvate in results.csv.');
