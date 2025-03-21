@@ -28,8 +28,6 @@ for i = 1:length(train_files)
     % Nome del caso nel file
     case_name_file = erase(train_files(i).name, '.csv'); % Nome del file senza estensione
     
-    % Confronto con la tabella delle label
-    % Assumi che train_labels.Case contenga numeri, quindi convertilo in formato "Case001"
     case_id = sprintf('Case%03d', train_labels.Case(i)); % Converte in formato "Case001"
     
     % Controllo diretto del confronto
@@ -106,7 +104,7 @@ for i = 1:length(train_files)
     tbl = readtable(filename);
     
     % Crea la sottotabella con i dati del caso corrente
-    sub_table = tbl; % Include tutte le colonne, puoi ridurre alle necessarie
+    sub_table = tbl;
     
     % Assegna un identificativo autoincrementale
     name_id = id_counter;
@@ -116,6 +114,5 @@ for i = 1:length(train_files)
     new_row = table(name_id, {sub_table}, task1_label, task2_label, task3_label, task4_label, task5_label, ...
                     'VariableNames', {'Name', 'Case', 'Task1', 'Task2', 'Task3', 'Task4', 'Task5'});
     
-    % Aggiungi la riga alla tabella finale
     labeledData = [labeledData; new_row];
 end

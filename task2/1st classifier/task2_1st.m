@@ -1,8 +1,8 @@
-%% **Preparazione del training set**
+%% Training set
 training_set_task2 = labeledData(labeledData.Task2 == 2 | labeledData.Task2 == 3, {'Case', 'Task2'});
 training_set_task2.Task2(:) = 4; % Uniformiamo l'etichetta
 
-%% **Preparazione del test set**
+%% Test set
 % Creazione del test set partendo dai dati grezzi
 test_set_task2 = test_set();
 
@@ -15,7 +15,7 @@ test_set_task2.Name = (startIndex:(startIndex+numRows-1))'; % Assegna direttamen
 filteredCaseNames = final_predictions_t1.Case(final_predictions_t1.Task1 == 1);
 test_set_task2 = test_set_task2(ismember(test_set_task2.Name, filteredCaseNames), :);
 
-%% **Caricamento o addestramento del modello**
+%% Caricamento o addestramento del modello
 model_filename = 'task2/1st classifier/results/best_model_t2_1st.mat';
 
 if isfile(model_filename)
@@ -32,7 +32,7 @@ else
     disp('Modello salvato con successo dopo il training.');
 end
 
-%% **Mappatura EnsembleID -> Case per la tabella delle feature di test**
+%% Mappatura EnsembleID -> Case per la tabella delle feature di test
 uniqueMembers = unique(featureTable_test_t2.Case);
 numUniqueMembers = numel(uniqueMembers);
 numFilteredCases = numel(filteredCaseNames);
@@ -76,7 +76,7 @@ end
 % Appiattisce eventuali celle nidificate
 featureTable_test_t2.CaseName = cellfun(@char, featureTable_test_t2.CaseName, 'UniformOutput', false);
 
-% Ora possiamo usare unique senza errori
+% Uso di unique senza errori
 uniqueCases = unique(featureTable_test_t2.CaseName);
 
 
@@ -86,22 +86,22 @@ for i = 1:height(uniqueCases)
     currentCase = uniqueCases{i};
     caseRows = featureTable_test_t2(strcmp(featureTable_test_t2.CaseName, currentCase), :);
 
-    % Seleziona solo le feature numeriche, ESCLUDENDO 'CaseName'
+    % Selezione delle feature numeriche, ESCLUDENDO 'CaseName'
     featureColumns = selected_feature_names_t2; % Usa le feature selezionate precedentemente
     numericData = caseRows(:, featureColumns);
-    numericData = numericData{:,:}; % Converti in matrice
+    numericData = numericData{:,:};
 
     % Verifica dimensione dei dati e colonne
     %disp(['Case: ', currentCase, ' - Dimensione dati: ', mat2str(size(numericData))]);
 
-    % Predizione per ciascuna finestra temporale
+    %% Predizione finale
     [isAnomaly, ~] = isanomaly(bestModel, numericData);
 
     % Conta le anomalie rilevate
     numAnomalie = sum(isAnomaly);
     %disp(['Case ', currentCase, ' - Anomalie rilevate: ', num2str(numAnomalie), ' su ', num2str(height(caseRows))]);
 
-    % Voto di maggioranza per determinare l'etichetta finale
+    % Majority Voting
     if numAnomalie >= 1
         finalLabel = 1; % Unknown anomaly
     else
@@ -111,6 +111,6 @@ for i = 1:height(uniqueCases)
     finalLabels(i) = finalLabel;
 end
 
-%% **Creazione della tabella finale con i risultati**
+% Creazione della tabella finale con i risultati
 results_t2_1st = table(uniqueCases, finalLabels, 'VariableNames', {'Case', 'CaseLabel'});
 

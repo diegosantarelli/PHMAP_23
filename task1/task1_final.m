@@ -4,25 +4,24 @@ normal_cases = labeledData(labeledData.Task1 == 0, {'Case', 'Task1'});
 % Filtra i casi con Task1 = 1
 anomaly_cases = labeledData(labeledData.Task1 == 1, {'Case', 'Task1'});
 
-% Supponiamo di avere due tabelle, table1 e table2
-anomaly_cases.Group = repmat({'anomaly_cases'}, height(anomaly_cases), 1); % Aggiungi una colonna per identificare il gruppo
+anomaly_cases.Group = repmat({'anomaly_cases'}, height(anomaly_cases), 1);
 normal_cases.Group = repmat({'normal_cases'}, height(normal_cases), 1);
 
-% Unisci le tabelle
+% Unione delle tabelle
 combinedTable = [anomaly_cases; normal_cases];
 
-%%
 test_set_task1 = test_set();
 
-% Imposta la durata della finestra in secondi
+%% Feature Generation Training Set
+
+% Surata della finestra in secondi
 window_size = 0.400;
 
 % Inizializza una cell array per raccogliere i dati
 feature_rows = {};
 
-% Itera su ogni caso in combinedTable
 for i = 1:height(combinedTable)
-    % Estrai la sottotabella del caso attuale
+    % Estrazione della sottotabella del caso attuale
     case_data = combinedTable.Case{i};  
     
     % Usa l'indice come identificativo del Case
@@ -31,7 +30,6 @@ for i = 1:height(combinedTable)
     % Recupera l'etichetta Task1 del caso
     case_label = combinedTable.Task1(i);
 
-    % Estrai il tempo
     time = case_data.TIME; 
     
     % Ottieni i nomi delle colonne dei segnali (tutti eccetto TIME)
@@ -71,7 +69,7 @@ for i = 1:height(combinedTable)
             p25_val = prctile(window_signal, 25);
             p75_val = prctile(window_signal, 75);
             var_val = var(window_signal, 'omitnan');
-            integral_val = trapz(time(idx), window_signal); % Integrale numerico
+            integral_val = trapz(time(idx), window_signal);
             min_val = min(window_signal, [], 'omitnan');
             max_val = max(window_signal, [], 'omitnan');
             
@@ -136,10 +134,8 @@ featureTable_test = cell2table(feature_rows, 'VariableNames', column_names);
 % Salva la tabella nel workspace
 assignin('base', 'featureTable_test', featureTable_test);
 
-% Visualizza la tabella delle feature
-%disp(featureTable_test);
+%% Feature Selection Training Set
 
-%%
 % Carica i dati
 features = featureTable_test;
 features_numeric = features(:, 3:end-1); % Esclude 'Case', 'Window_ID', 'Label'
@@ -148,7 +144,7 @@ labels = features.Task1;
 % Numero di feature da selezionare
 num_features_select = 22;
 
-% --- 1. Calcolo del valore F di ANOVA per ogni feature ---
+% --- Calcolo del valore F di ANOVA per ogni feature ---
 p_values = zeros(1, width(features_numeric));
 for i = 1:width(features_numeric)
     p_values(i) = anova1(table2array(features_numeric(:, i)), labels, 'off');
@@ -165,15 +161,7 @@ F_values(isinf(F_values) | isnan(F_values)) = max(F_values(~isinf(F_values) & ~i
 selected_feature_names = features_numeric.Properties.VariableNames(sorted_idx(1:num_features_select));
 selected_features = features(:, [selected_feature_names, "Task1"]); % Mantiene anche l'etichetta
 
-% Visualizza le feature selezionate
-%disp('Feature selezionate con ANOVA:');
-%disp(selected_feature_names);
-
-% Mostra la nuova tabella ridotta
-%disp(selected_features);
-
-%% TEST SET
-% --- 1. Estrazione delle Feature sul Test Set ---
+%% Feature Generation Test Set
 
 % Rimuove la colonna 'Spacecraft' dal test set
 test_set_task1 = removevars(test_set_task1, 'Spacecraft');
@@ -288,7 +276,7 @@ end
 % Converti in tabella
 featureTable_testset = cell2table(feature_rows_test, 'VariableNames', column_names);
 
-% --- 2. Selezione delle Top 22 Feature (dai risultati di ANOVA) ---
+%% Feature Selection Test Set
 
 % Seleziona solo le feature che erano nelle prime 22 nel training set
 selected_features_testset_t1 = featureTable_testset(:, ["Case", "Window_ID", selected_feature_names]);
@@ -296,15 +284,12 @@ selected_features_testset_t1 = featureTable_testset(:, ["Case", "Window_ID", sel
 % Salva e aggiorna il workspace
 assignin('base', 'selected_features_testset', selected_features_testset_t1);
 
-% Verifica la struttura della tabella
-%summary(selected_features_testset_t1)
-
 %% Predizioni
 
 load('task1/results/coarse_tree_final.mat', 'coarse_tree');
 
 % Rimuove 'Case' e 'Window_ID' per la predizione
-test_features = selected_features_testset_t1(:, 3:end); % Mantiene solo le feature
+test_features = selected_features_testset_t1(:, 3:end);
 
 % Esegue le predizioni
 predicted_labels = coarse_tree.predictFcn(test_features);
@@ -328,9 +313,6 @@ for i = 1:length(unique_cases)
     % Converte l'etichetta in 1 (anomaly) e 0 (normal)
     final_predictions_t1.Task1(i) = double(final_label ~= 0); % Se diverso da 0, allora è anomaly (1)
 end
-
-% Visualizza la tabella finale
-%disp(final_predictions);
 
 % Salva il CSV
 writetable(final_predictions_t1, 'results.csv');

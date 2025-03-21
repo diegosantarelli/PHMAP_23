@@ -1,5 +1,3 @@
-%% **MATRICE DI CONFUSIONE TASK 2**
-
 % Caricamento del file CSV con le risposte corrette
 data = readtable('dataset/test/answer.csv', 'VariableNamingRule', 'preserve');
 

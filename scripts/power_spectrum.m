@@ -1,7 +1,7 @@
 % Lista dei sensori
 sensors = {'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7'};
 
-% Palette di colori più leggibili e armonici per ogni sensore
+% Palette di colori
 sensor_colors = [ 
     0.85, 0.33, 0.10; % P1 - Rosso scuro
     0.93, 0.69, 0.13; % P2 - Giallo ocra
@@ -12,7 +12,6 @@ sensor_colors = [
     0.99, 0.41, 0.23  % P7 - Arancio acceso
 ];
 
-% Itera su ogni sensore
 for s = 1:length(sensors)
     sensor_name = sensors{s};
     
@@ -20,7 +19,6 @@ for s = 1:length(sensors)
     color_task1_1 = sensor_colors(s, :);       % Più scuro per Task1=1
     color_task1_0 = color_task1_1 + 0.15;      % Più chiaro per Task1=0
 
-    % Assicura che i colori restino nel range [0,1]
     color_task1_0(color_task1_0 > 1) = 1;
     
     figure;
@@ -48,7 +46,7 @@ for s = 1:length(sensors)
     end
     
     % Impostazioni del grafico
-    set(gca, 'XScale', 'log'); % Asse x in scala logaritmica
+    set(gca, 'XScale', 'log');
     xlabel('Frequency (Hz)');
     ylabel('Case\_ps/SpectrumData');
     title(['Power Spectrum - ', sensor_name]);

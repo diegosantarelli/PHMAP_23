@@ -1,5 +1,3 @@
-%% **Preparazione del Training Set per Task 4 (Valve Fault)**
-
 % Filtra i casi con Task2 == 3 (Valve Fault)
 training_set_task4 = labeledData(labeledData.Task2 == 3, {'Name', 'Case', 'Task4'});
 
@@ -9,6 +7,7 @@ window_size = 0.400;
 % Inizializza una cell array per raccogliere i dati
 feature_rows_task4 = {};
 
+%% Feature Generation Training Set
 % Itera su ogni caso nel training set
 for i = 1:height(training_set_task4)
     % Estrai la sottotabella del caso attuale
@@ -127,7 +126,7 @@ assignin('base', 'featureTable_task4', featureTable_task4);
 
 %disp('Feature extraction completata per Task 4.');
 
-%% **FEATURE IMPORTANCE - ANOVA per Task 4**
+%% Feature Selection Training Set
 
 % Carica il dataset con le feature
 features_task4 = featureTable_task4;
@@ -167,11 +166,11 @@ num_features_to_plot_task4 = min(15, num_features_task4);
 % xtickangle(90); % Ruota le etichette delle feature
 % grid on;
 
-% Seleziona le prime **15** feature più importanti
+% Seleziona le prime 15 feature più importanti
 num_features_to_keep_task4 = 15;
 selected_feature_names_task4 = sorted_features_task4(1:num_features_to_keep_task4);
 
-% Crea un nuovo dataset con solo le **top 15 feature**
+% Crea un nuovo dataset con solo le top 15 feature
 selected_features_task4 = features_task4(:, ["Case", "Window_ID", selected_feature_names_task4, "Task4"]); 
 
 % Salva il dataset con le feature selezionate
@@ -180,7 +179,7 @@ assignin('base', 'selected_features_task4', selected_features_task4);
 % disp('Feature selezionate per Task 4:');
 % disp(selected_feature_names_task4);
 
-%% **TASK 4 - Estrazione delle Feature per il Test Set (Valve Fault)**
+%% Feature Generation Test Set
 
 % Carica il test set completo
 test_set_complete = test_set();
@@ -301,8 +300,7 @@ featureTable_test_task4 = cell2table(feature_rows_test_task4, 'VariableNames', c
 
 %disp("Feature extraction completata per il Test Set di Task 4.");
 
-%% **SELEZIONE DELLE FEATURE - TEST SET (Task 4)**
-
+%% Feature Selection Test Set
 % Usa le stesse feature selezionate nel training
 selected_features_test_task4 = featureTable_test_task4(:, ["Case", "Window_ID", selected_feature_names_task4]);
 
@@ -312,7 +310,7 @@ assignin('base', 'selected_features_test_task4', selected_features_test_task4);
 % disp('Feature selezionate per il Test Set di Task 4:');
 % disp(selected_feature_names_task4);
 
-%% **TASK 4 - Predizioni e Majority Voting**
+%% Predizioni
 
 % Carica il modello addestrato per il Task 4
 load('task4/results/bagged_trees.mat', 'bagged_trees');
@@ -326,7 +324,7 @@ predicted_labels_task4 = bagged_trees.predictFcn(test_features_task4);
 % Aggiunge le predizioni alla tabella delle feature
 selected_features_test_task4.PredictedTask4 = predicted_labels_task4;
 
-% --- Aggregazione per Case con Majority Voting ---
+%% Majority Voting
 unique_cases_task4 = unique(selected_features_test_task4.Case);
 final_predictions_task4 = table(unique_cases_task4, zeros(size(unique_cases_task4)), 'VariableNames', {'Case', 'Task4'});
 
@@ -342,8 +340,6 @@ for i = 1:length(unique_cases_task4)
     % Assegna l'etichetta finale
     final_predictions_task4.Task4(i) = final_label;
 end
-
-%% **AGGIORNAMENTO DEL FILE RESULTS.CSV**
 
 % Carica il file CSV con Task1, Task2 e Task3
 results_t4 = readtable('results.csv', 'VariableNamingRule', 'preserve');

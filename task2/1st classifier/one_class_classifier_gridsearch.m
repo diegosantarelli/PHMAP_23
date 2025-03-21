@@ -1,14 +1,12 @@
 function [bestModel, bestParams, bestFalsiPositivi, featureTable_t2_1st, featureTable_test_t2, selected_feature_names_t2] = one_class_classifier_gridsearch(training_set_task2, test_set, k)
-
-
-    %% **Inizializzazione delle variabili di output**
+    %% Inizializzazione delle variabili di output
     bestModel = [];
     bestParams = struct('NumLearners', [], 'ContaminationFraction', []);
     bestFalsiPositivi = inf;
     featureTable_t2_1st = table();  
     featureTable_test_t2 = table(); 
 
-    %% **Training set - Generazione delle feature**
+    %% Feature Generation Training Set
     window_size = 0.400;
     feature_rows_t2 = {};
 
@@ -84,7 +82,7 @@ function [bestModel, bestParams, bestFalsiPositivi, featureTable_t2_1st, feature
         error('Errore: feature_rows_t2 è vuoto, impossibile creare la tabella delle feature.');
     end
 
-    %% **Selezione delle feature migliori per il Task 2**
+    %% Feature Selection Training Set
     features_numeric_t2 = featureTable_t2_1st(:, 3:end-1);
     feature_variances = var(table2array(features_numeric_t2), 0, 1);
     [sorted_variances, sorted_idx] = sort(feature_variances, 'descend');
@@ -103,7 +101,7 @@ function [bestModel, bestParams, bestFalsiPositivi, featureTable_t2_1st, feature
     % Ora selezioniamo le migliori feature
     selected_feature_names_t2 = features_numeric_t2.Properties.VariableNames(sorted_idx(1:num_features_select));
 
-    %% **Generazione delle feature per il test set**
+    %% Feature Generation Test Set
     feature_rows_test_t2 = {};
     for i = 1:height(test_set)
         case_data = test_set.Case{i};  
@@ -186,7 +184,7 @@ function [bestModel, bestParams, bestFalsiPositivi, featureTable_t2_1st, feature
         end
     end
 
-    %% **Predizione finale**
+    %% Predizione finale
     [isAnomaly_test, ~] = isanomaly(bestModel, X_test);
     %disp(['Anomalie rilevate nel test set: ', num2str(sum(isAnomaly_test == 1))]);
 end

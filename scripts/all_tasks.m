@@ -5,7 +5,7 @@ disp('Importazione dati...');
 import_data; % Assicurati che questo carichi i dati necessari
 disp('Dati importati correttamente.');
 
-%% Esecuzione dei task cascata
+%% Esecuzione dei task a cascata
 disp('Avvio Task1...');
 task1_final;
 disp('Task1 completato! Ora avvio Task2_1st.');

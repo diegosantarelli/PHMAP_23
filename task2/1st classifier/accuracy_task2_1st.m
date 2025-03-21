@@ -1,11 +1,9 @@
-% =================== CARICAMENTO DATI ===================
 % Carica il dataset con le etichette reali
 data = readtable('dataset/test/answer.csv', 'VariableNamingRule', 'preserve');
 
 % Rinominare 'ID' in 'Name' e trasformare i valori in 'CaseXXX'
 data.Name = strcat('Case', string(data.ID));
 
-% =================== PREPARAZIONE DEL TEST SET ===================
 % Mantenere solo le colonne 'Name' e 'task2'
 test_set_labeled_t2 = data(:, {'Name', 'task2'});
 
@@ -22,10 +20,8 @@ test_set_labeled_t2.Properties.VariableNames = {'Case', 'Task2'};
 test_set_labeled_t2.Case = string(test_set_labeled_t2.Case);
 results_t2_1st.Case = string(results_t2_1st.Case);
 
-% =================== CORREZIONE: Rimuoviamo "Case" dai nomi ===================
 test_set_labeled_t2.Case = erase(test_set_labeled_t2.Case, "Case");
 
-% =================== UNIONE DEI RISULTATI ===================
 % Unione con controllo dei Case
 merged_table = innerjoin(results_t2_1st, test_set_labeled_t2, 'Keys', 'Case');
 
@@ -34,7 +30,7 @@ if isempty(merged_table)
     error('Errore critico: Nessun match tra predizioni e etichette reali! Verifica i Case.');
 end
 
-% =================== CALCOLO ACCURATEZZA ===================
+%% =================== CALCOLO ACCURATEZZA ===================
 % Identificazione della colonna corretta per il confronto
 col_predizioni = 'CaseLabel';
 col_real = 'Task2';
@@ -55,5 +51,4 @@ else
     accuratezza = num_predizioni_corrette / height(merged_table);
 end
 
-% =================== RISULTATI ===================
-disp(['Accuratezza dell Isolation Forest: ', num2str(accuratezza * 100), '%']);
+disp(['Accuratezza dell Isolation Forest (Task 2.1): ', num2str(accuratezza * 100, '%.2f'), '%']);

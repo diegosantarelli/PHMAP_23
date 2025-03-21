@@ -16,5 +16,4 @@ correct_predictions = merged_table_task2.Task2 == merged_table_task2.CaseLabel;
 % Calcolo dell'accuracy
 accuracy = sum(correct_predictions) / height(merged_table_task2);
 
-% Mostra il risultato
-disp(['Accuratezza del secondo task: ', num2str(accuracy * 100, '%.2f'), '%']);
+disp(['Accuratezza del Task 2: ', num2str(accuracy * 100, '%.2f'), '%']);

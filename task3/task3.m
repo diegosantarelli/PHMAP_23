@@ -1,5 +1,3 @@
-%% TASK 3 - Generazione delle Feature
-
 % Filtra i casi con Task3 diverso da 0
 training_set_task3 = labeledData(labeledData.Task3 ~= 0, {'Name', 'Case', 'Task3'});
 
@@ -9,7 +7,7 @@ window_size = 0.400;
 % Inizializza una cell array per raccogliere i dati
 feature_rows_task3 = {};
 
-% Itera su ogni caso nel training set
+%% Feature Generation Training Set
 for i = 1:height(training_set_task3)
     % Estrai la sottotabella del caso attuale
     case_data = training_set_task3.Case{i};  
@@ -128,7 +126,7 @@ assignin('base', 'featureTable_task3', featureTable_task3);
 % Visualizza la tabella delle feature
 %disp(featureTable_task3);
 
-%% FEATURE IMPORTANCE - ANOVA
+%% Feature Selection Training Set
 
 % Carica il dataset con le feature
 features = featureTable_task3;
@@ -182,11 +180,7 @@ assignin('base', 'selected_features_task3', selected_features_task3);
 % disp('Feature selezionate per Task 3:');
 % disp(selected_feature_names);
 
-
-
-
-
-%% TASK 3 - Estrazione delle Feature per il Test Set
+%% Feature Generation Test Set
 
 % Carica il test set completo
 test_set_complete = test_set();
@@ -298,7 +292,7 @@ end
 % Creazione della tabella finale
 featureTable_test_task3 = cell2table(feature_rows_test_task3, 'VariableNames', column_names);
 
-% --- Selezione delle Feature per il Test Set ---
+%% Feature Selection Test set
 
 % Usa le stesse feature selezionate nel training
 selected_features_test_task3 = featureTable_test_task3(:, ["Case", "Window_ID", selected_feature_names]);
@@ -306,7 +300,7 @@ selected_features_test_task3 = featureTable_test_task3(:, ["Case", "Window_ID", 
 % Salva il dataset con le feature selezionate
 assignin('base', 'selected_features_test_task3', selected_features_test_task3);
 
-%% TASK 3 - Predizioni e Majority Voting
+%% Predizioni
 
 % Carica il modello addestrato per il Task 3
 load('task3/results/linear_svm.mat', 'linear_svm');
@@ -320,7 +314,7 @@ predicted_labels_task3 = linear_svm.predictFcn(test_features_task3);
 % Aggiunge le predizioni alla tabella delle feature
 selected_features_test_task3.PredictedTask3 = predicted_labels_task3;
 
-% --- Aggregazione per Case con Majority Voting ---
+%% Majority Voting
 unique_cases = unique(selected_features_test_task3.Case);
 final_predictions_task3 = table(unique_cases, zeros(size(unique_cases)), 'VariableNames', {'Case', 'Task3'});
 
@@ -336,9 +330,6 @@ for i = 1:length(unique_cases)
     % Assegna l'etichetta finale
     final_predictions_task3.Task3(i) = final_label;
 end
-
-
-%% AGGIORNAMENTO DEL FILE RESULTS.CSV
 
 % Carica il file CSV con Task1 e Task2
 results_t3 = readtable('results.csv', 'VariableNamingRule', 'preserve');

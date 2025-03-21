@@ -1,4 +1,4 @@
-%% **Preparazione del training set**
+%% Preparazione del training set
 training_set_task2_2nd = labeledData(labeledData.Task2 == 2 | labeledData.Task2 == 3, {'Case', 'Task2'});
 
 % Imposta la durata della finestra in secondi
@@ -7,7 +7,7 @@ window_size = 0.400;
 % Inizializza una cell array per raccogliere i dati
 feature_rows_training_2nd = {};
 
-%% **Calcolo delle feature per il training set (Task 2)**
+%% Feature Generation Trraining Set
 for i = 1:height(training_set_task2_2nd)
     case_data = training_set_task2_2nd.Case{i};  
     case_id = i;
@@ -60,8 +60,8 @@ for i = 1:height(training_set_task2_2nd)
     end  % Chiusura del ciclo for w (finestre)
 end  % Chiusura del ciclo for i (training set)
 
-%% **Preparazione del test set per il secondo classificatore**
-% Seleziona solo i Case con anomalie note dal primo classificatore (CaseLabel == 4 in results_t2_1st)
+%% Preparazione del test set
+% Seleziona solo i Case con anomalie note dal primo classificatore
 test_set_task2_2nd = results_t2_1st(results_t2_1st.CaseLabel == 4, {'Case', 'CaseLabel'});
 
 % Carica i dati grezzi
@@ -78,6 +78,7 @@ end
 % Inizializza la cell array per raccogliere le feature del test set
 feature_rows_test_2nd = {};
 
+%% Feature Generation Test Set
 % Itera su ogni caso del test set per estrarre le feature
 for i = 1:height(test_set_task2_2nd)
     case_data = test_set_task2_2nd.RawData{i};
@@ -128,7 +129,6 @@ for i = 1:height(test_set_task2_2nd)
     end  % Chiusura del ciclo for w (finestre)
 end  % Chiusura del ciclo for i (test set)
 
-%% **Creazione della tabella per il test set**
 column_names_test_2nd = {'Case', 'Window_ID'};
 
 for col = 1:length(signal_columns)
@@ -148,10 +148,9 @@ column_names_test_2nd = [column_names_test_2nd, 'CaseLabel'];
 % Converti la cell array in una tabella
 featureTable_test_2nd = cell2table(feature_rows_test_2nd, 'VariableNames', column_names_test_2nd);
 
-%% **Predizioni**
+%% Predizioni
 load('task2/2nd classifier/results/fine_gaussian_t2_2nd.mat', 'fine_gaussian_t2_2nd');
 
-% Assicurati che Case e Window_ID siano numerici
 featureTable_test_2nd.Case = str2double(string(featureTable_test_2nd.Case));
 featureTable_test_2nd.Window_ID = str2double(string(featureTable_test_2nd.Window_ID));
 
@@ -170,7 +169,7 @@ predicted_labels = fine_gaussian_t2_2nd.predictFcn(featureTable_test_2nd(:, 3:en
 
 featureTable_test_2nd.PredictedTask2 = predicted_labels;
 
-%% **Majority voting**
+%% Majority voting
 unique_cases = unique(featureTable_test_2nd.Case);
 final_predictions_t2 = table(unique_cases, zeros(size(unique_cases)), 'VariableNames', {'Case', 'Task2'});
 
@@ -181,13 +180,11 @@ for i = 1:length(unique_cases)
     final_predictions_t2.Task2(i) = final_label;
 end
 
-%% **Salvataggio risultati**
 writetable(final_predictions_t2, 'results_task2.csv');
 
 % Carica il file CSV dei risultati del Task 1
 results_task1 = readtable('results.csv');
 
-% Assicurati che "Case" sia trattato come stringa
 results_task1.Case = string(results_task1.Case);
 final_predictions_t2.Case = string(final_predictions_t2.Case);
 results_t2_1st.Case = string(results_t2_1st.Case);
@@ -209,5 +206,4 @@ for i = 1:height(final_predictions_t2)
     end
 end
 
-% Salva il file aggiornato con Task1 e Task2 corretti
 writetable(results_task1, 'results.csv');

@@ -1,5 +1,3 @@
-%% **CALCOLO ACCURATEZZA TASK 4**
-
 % Caricamento del file CSV con le risposte corrette
 data_t4 = readtable('dataset/test/answer.csv', 'VariableNamingRule', 'preserve');
 
@@ -18,5 +16,4 @@ correct_predictions_t4 = merged_table_t4.Task4 == merged_table_t4.CaseLabel;
 % Calcolo dell'accuracy
 accuracy_t4 = sum(correct_predictions_t4) / height(merged_table_t4);
 
-% Mostra il risultato
 disp(['Accuratezza del Task 4: ', num2str(accuracy_t4 * 100, '%.2f'), '%']);

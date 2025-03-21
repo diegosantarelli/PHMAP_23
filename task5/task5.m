@@ -1,6 +1,6 @@
 training_set_task5 = labeledData(labeledData.Task5 ~= 100, {'Case', 'Task5'});
 
-%%
+%% Data Augmentation
 % Numero di copie da generare (esclusa l'originale)
 num_copies = 3;
 
@@ -36,8 +36,6 @@ augmented_data = augmented_data(randperm(height(augmented_data)), :);
 % Il dataset aumentato ora può essere usato per la regressione
 training_set_task5 = augmented_data;
 
-%%
-
 test_set_task5 = test_set();
 
 % Ottenere il numero di record nel test set
@@ -70,13 +68,15 @@ test_set_task5.Task5 = NaN(height(test_set_task5), 1);
 numFeatureRows = height(featureTable_test_task5);
 numTestRows = height(test_set_task5);
 
-% Se featureTable ha più righe di test_set_task3, ripetiamo i nomi dei Case
+% Se featureTable ha più righe di test_set_task5, ripetiamo i nomi dei Case
 if numFeatureRows > numTestRows
     repeatedNames = repelem(test_set_task5.Name, numFeatureRows / numTestRows);
     featureTable_test_task5.Name = repeatedNames;
 else
     featureTable_test_task5.Name = test_set_task5.Name;
 end
+
+%% Predizioni
 
 load('task5/results/baggedTrees_t5.mat', 'finalModel_t5');
 
@@ -104,7 +104,7 @@ grouped_results = removevars(grouped_results, intersect(colsToRemove, grouped_re
 % Caricare il file CSV esistente con i risultati di Task 1 e Task 2
 results_t5 = readtable('results.csv', 'VariableNamingRule', 'preserve');
 
-% Se la colonna Task3 non esiste, la inizializziamo a 0
+% Se la colonna Task5 non esiste, la inizializziamo a 0
 if ~ismember('Task5', results_t5.Properties.VariableNames)
     results_t5.Task5 = zeros(height(results_t5), 1);
 end
@@ -112,13 +112,13 @@ end
 % Unire le predizioni reali con il file esistente (Left Join)
 results_t5 = outerjoin(results_t5, grouped_results, 'LeftKeys', 'Case', 'RightKeys', 'Case', 'MergeKeys', true);
 
-% Se Task3_grouped_results esiste, copiarne i valori in Task3 e rimuoverla
+% Se Task5_grouped_results esiste, copiarne i valori in Task5 e rimuoverla
 if ismember('Task5_grouped_results', results_t5.Properties.VariableNames)
     results_t5.Task5 = results_t5.Task5_grouped_results;
     results_t5 = removevars(results_t5, 'Task5_grouped_results'); % Rimuovere la colonna temporanea
 end
 
-% Sostituire i NaN con 0 in Task3
+% Sostituire i NaN con 100
 results_t5.Task5(isnan(results_t5.Task5)) = 100;
 
 % Rimuovere la colonna GroupCount se presente
@@ -129,5 +129,5 @@ end
 % Mantieni solo le colonne desiderate nel file finale
 results_t5 = results_t5(:, {'Case', 'Task1', 'Task2', 'Task3', 'Task4', 'Task5'});
 
-% Salvare il file aggiornato con Task 3 senza sovrascrivere altri dati
+% Salvare il file aggiornato con Task 5 senza sovrascrivere altri dati
 writetable(results_t5, 'results.csv');
